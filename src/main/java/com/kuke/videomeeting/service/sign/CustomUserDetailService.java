@@ -1,5 +1,6 @@
 package com.kuke.videomeeting.service.sign;
 
+import com.kuke.videomeeting.advice.exception.UserNotFoundException;
 import com.kuke.videomeeting.domain.User;
 import com.kuke.videomeeting.model.auth.CustomUserDetails;
 import com.kuke.videomeeting.repository.user.UserRepository;
@@ -21,7 +22,7 @@ public class CustomUserDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String userPk) throws UsernameNotFoundException {
-        User user = userRepository.findById(Long.valueOf(userPk)).orElseThrow(NullPointerException::new);
+        User user = userRepository.findById(Long.valueOf(userPk)).orElseThrow(UserNotFoundException::new);
         return new CustomUserDetails(
                 user.getId(),
                 user.getUid(),

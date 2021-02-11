@@ -26,7 +26,6 @@ public class SignService {
     public void register(UserRegisterRequestDto requestDto) {
         validateDuplicateUserByNickname(requestDto.getNickname());
         validateDuplicateUserByUid(requestDto.getUid());
-        validateDuplicateUserByProvider(requestDto.getUid(), requestDto.getProvider());
         userRepository.save(
                 User.createUser(
                         requestDto.getUid(),
@@ -37,6 +36,7 @@ public class SignService {
                         Collections.singletonList(Role.ROLE_NORMAL))
         );
     }
+
 
     private void validateDuplicateUserByUid(String uid) {
         if(userRepository.findByUid(uid).isPresent()) throw new UserUidAlreadyExistsException();

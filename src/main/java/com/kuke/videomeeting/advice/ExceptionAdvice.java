@@ -2,6 +2,7 @@ package com.kuke.videomeeting.advice;
 
 import com.kuke.videomeeting.advice.exception.AuthenticationEntryPointException;
 import com.kuke.videomeeting.advice.exception.UserNicknameAlreadyExistsException;
+import com.kuke.videomeeting.advice.exception.UserNotFoundException;
 import com.kuke.videomeeting.advice.exception.UserUidAlreadyExistsException;
 import com.kuke.videomeeting.model.dto.response.Result;
 import com.kuke.videomeeting.service.common.ResponseService;
@@ -42,12 +43,18 @@ public class ExceptionAdvice {
     @ExceptionHandler(UserUidAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result userUidAlreadyExistsException() {
-        return responseService.getFailResult(-1003, "이미 해당 유저 아이디가 있습니다.");
+        return responseService.getFailResult(-1003, "이미 해당 유저 아이디의 사용자가 있습니다.");
     }
 
     @ExceptionHandler(UserNicknameAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result userNicknameAlreadyExistsException() {
-        return responseService.getFailResult(-1004, "이미 해당 닉네임이 있습니다.");
+        return responseService.getFailResult(-1004, "이미 해당 닉네임의 사용자가 있습니다.");
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result userNotFoundException() {
+        return responseService.getFailResult(-1005, "해당 사용자를 찾을 수 없습니다.");
     }
 }
