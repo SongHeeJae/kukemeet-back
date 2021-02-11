@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -32,6 +34,22 @@ public class User extends CommonEntityDate{
     private String provider;
 
     private String refreshToken;
+
+    @ElementCollection(fetch = FetchType.LAZY)
+    @Enumerated(EnumType.STRING)
+    private List<Role> roles = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<Friend> friends;
+
+    @OneToMany(mappedBy = "friend")
+    private List<Friend> AddedMe;
+
+    @OneToMany(mappedBy = "sender")
+    private List<Message> sendingMessages;
+
+    @OneToMany(mappedBy = "receiver")
+    private List<Message> receivingMessages;
 
 
 }
