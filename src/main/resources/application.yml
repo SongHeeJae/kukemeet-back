@@ -1,4 +1,9 @@
 spring:
+
+  profiles:
+    include:
+      - credential
+
   datasource:
     url: jdbc:h2:tcp://localhost/~/videomeeting
     username: sa

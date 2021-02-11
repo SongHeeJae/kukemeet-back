@@ -1,4 +1,4 @@
-package com.kuke.videomeeting.entity;
+package com.kuke.videomeeting.domain;
 
 public enum ReadingStatus {
     Y, N

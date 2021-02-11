@@ -1,4 +1,4 @@
-package com.kuke.videomeeting.entity;
+package com.kuke.videomeeting.domain;
 
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;

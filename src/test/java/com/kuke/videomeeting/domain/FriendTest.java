@@ -1,4 +1,4 @@
-package com.kuke.videomeeting.entity;
+package com.kuke.videomeeting.domain;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,7 +9,6 @@ import javax.persistence.PersistenceContext;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 class FriendTest {
