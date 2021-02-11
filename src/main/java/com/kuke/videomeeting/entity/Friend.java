@@ -21,4 +21,11 @@ public class Friend implements Serializable {
     @Id @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "friend_id")
     private User friend;
+
+    public static Friend createFriend(User user, User friend) {
+        Friend f = new Friend();
+        f.user = user;
+        f.friend = friend;
+        return f;
+    }
 }

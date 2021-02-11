@@ -27,11 +27,19 @@ public class Message extends CommonEntityDate{
 
     @Lob
     @Column(nullable = false)
-    private String message;
+    private String msg;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ReadingStatus readingStatus;
+
+    public static Message createMessage(User sender, User receiver, String msg) {
+        Message message = new Message();
+        message.sender = sender;
+        message.receiver = receiver;
+        message.msg = msg;
+        return message;
+    }
 
 
 }
