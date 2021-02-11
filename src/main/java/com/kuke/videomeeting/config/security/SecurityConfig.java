@@ -29,9 +29,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // jwt로 인증하므로 세션 미사용
                 .and()
-                .authorizeRequests()
-                    .antMatchers("/api/sign/", "/api/sign/**").permitAll()
-                    .anyRequest().authenticated()
+                    .authorizeRequests()
+                        .antMatchers("/api/sign/", "/api/sign/**").permitAll()
+                        .antMatchers(HttpMethod.GET, "/api/users/**", "/api/users/").permitAll()
+                        .anyRequest().authenticated()
+                .and()
+                    .exceptionHandling().accessDeniedHandler(new CustomAccessDeniedHandler())
+                .and()
+                    .exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                 .and()
                     .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class); // jwt 필터 추가
 

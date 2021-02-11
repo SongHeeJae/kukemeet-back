@@ -1,4 +1,4 @@
-package com.kuke.videomeeting.model.dto;
+package com.kuke.videomeeting.model.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
