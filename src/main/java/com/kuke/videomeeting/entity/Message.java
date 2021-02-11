@@ -38,6 +38,7 @@ public class Message extends CommonEntityDate{
         message.sender = sender;
         message.receiver = receiver;
         message.msg = msg;
+        message.readingStatus = ReadingStatus.N;
         return message;
     }
 
