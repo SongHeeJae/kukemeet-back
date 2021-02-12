@@ -9,6 +9,7 @@ import com.kuke.videomeeting.service.sign.SignService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -25,6 +26,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class SignControllerTest {
@@ -49,8 +52,10 @@ class SignControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/api/sign/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content))
-                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
                 .andDo(MockMvcResultHandlers.print());
+
+        verify(signService).register(info);
     }
 
 }

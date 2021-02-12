@@ -1,12 +1,11 @@
 package com.kuke.videomeeting.model.dto.user;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode
 public class UserRegisterRequestDto {
     private String uid;
     private String password;
