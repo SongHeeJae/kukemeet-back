@@ -1,10 +1,14 @@
 package com.kuke.videomeeting.service.sign;
 
+import com.kuke.videomeeting.advice.exception.LoginFailureException;
 import com.kuke.videomeeting.advice.exception.UserNicknameAlreadyExistsException;
 import com.kuke.videomeeting.advice.exception.UserUidAlreadyExistsException;
 import com.kuke.videomeeting.config.security.JwtTokenProvider;
 import com.kuke.videomeeting.domain.Role;
 import com.kuke.videomeeting.domain.User;
+import com.kuke.videomeeting.model.dto.user.UserDto;
+import com.kuke.videomeeting.model.dto.user.UserLoginRequestDto;
+import com.kuke.videomeeting.model.dto.user.UserLoginResponseDto;
 import com.kuke.videomeeting.model.dto.user.UserRegisterRequestDto;
 import com.kuke.videomeeting.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +25,7 @@ import java.util.Collections;
 public class SignService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
     public void register(UserRegisterRequestDto requestDto) {
@@ -32,9 +37,18 @@ public class SignService {
                         passwordEncoder.encode(requestDto.getPassword()),
                         requestDto.getUsername(),
                         requestDto.getNickname(),
-                        requestDto.getProvider(),
+                        null,
                         Collections.singletonList(Role.ROLE_NORMAL))
         );
+    }
+
+    public UserLoginResponseDto login(UserLoginRequestDto requestDto) {
+        User user = userRepository.findByUid(requestDto.getUid()).orElseThrow(LoginFailureException::new);
+        if(!passwordEncoder.matches(requestDto.getPassword(), user.getPassword()))
+            throw new LoginFailureException();
+        String refreshToken = createRefreshToken();
+        user.changeRefreshToken(refreshToken);
+        return new UserLoginResponseDto(jwtTokenProvider.createToken(String.valueOf(user.getId())), refreshToken, UserDto.convertUserToDto(user));
     }
 
 
@@ -44,12 +58,15 @@ public class SignService {
 
     private void validateDuplicateUserByNickname(String nickname) {
         if(userRepository.findByNickname(nickname).isPresent()) throw new UserNicknameAlreadyExistsException();
-
     }
 
     private void validateDuplicateUserByProvider(String uid, String provider) {
         if(StringUtils.hasText(provider) && userRepository.findByUidAndProvider(uid, provider).isPresent())
             new UserUidAlreadyExistsException();
+    }
+
+    private String createRefreshToken() {
+        return jwtTokenProvider.createRefreshToken();
     }
 
 }

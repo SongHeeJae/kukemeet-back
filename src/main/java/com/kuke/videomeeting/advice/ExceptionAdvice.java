@@ -1,9 +1,6 @@
 package com.kuke.videomeeting.advice;
 
-import com.kuke.videomeeting.advice.exception.AuthenticationEntryPointException;
-import com.kuke.videomeeting.advice.exception.UserNicknameAlreadyExistsException;
-import com.kuke.videomeeting.advice.exception.UserNotFoundException;
-import com.kuke.videomeeting.advice.exception.UserUidAlreadyExistsException;
+import com.kuke.videomeeting.advice.exception.*;
 import com.kuke.videomeeting.model.dto.response.Result;
 import com.kuke.videomeeting.service.common.ResponseService;
 import lombok.RequiredArgsConstructor;
@@ -56,5 +53,11 @@ public class ExceptionAdvice {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result userNotFoundException() {
         return responseService.getFailResult(-1005, "해당 사용자를 찾을 수 없습니다.");
+    }
+
+    @ExceptionHandler(LoginFailureException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result loginFailureException() {
+        return responseService.getFailResult(-1006, "로그인에 실패하였습니다.");
     }
 }

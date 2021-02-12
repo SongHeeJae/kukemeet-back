@@ -62,5 +62,9 @@ public class User extends CommonEntityDate{
         return user;
     }
 
+    public void changeRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
 
 }

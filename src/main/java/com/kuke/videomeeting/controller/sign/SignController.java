@@ -1,6 +1,7 @@
 package com.kuke.videomeeting.controller.sign;
 
 import com.kuke.videomeeting.model.dto.response.Result;
+import com.kuke.videomeeting.model.dto.user.UserLoginRequestDto;
 import com.kuke.videomeeting.model.dto.user.UserRegisterRequestDto;
 import com.kuke.videomeeting.service.common.ResponseService;
 import com.kuke.videomeeting.service.sign.SignService;
@@ -23,5 +24,11 @@ public class SignController {
     public Result register(@RequestBody UserRegisterRequestDto requestDto) {
         signService.register(requestDto);
         return responseService.getSuccessResult();
+    }
+
+    @ApiOperation(value="로그인", notes = "로그인을 한다.")
+    @PostMapping(value = "/login")
+    public Result login(@RequestBody UserLoginRequestDto requestDto) {
+        return responseService.getSingleResult(signService.login(requestDto));
     }
 }

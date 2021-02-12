@@ -3,6 +3,7 @@ package com.kuke.videomeeting.controller.sign;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuke.videomeeting.config.security.JwtAuthenticationFilter;
 import com.kuke.videomeeting.config.security.JwtTokenProvider;
+import com.kuke.videomeeting.model.dto.user.UserLoginRequestDto;
 import com.kuke.videomeeting.model.dto.user.UserRegisterRequestDto;
 import com.kuke.videomeeting.service.common.ResponseService;
 import com.kuke.videomeeting.service.sign.SignService;
@@ -45,17 +46,31 @@ class SignControllerTest {
     @Test
     public void registerTest() throws Exception {
         // given
-        UserRegisterRequestDto info = new UserRegisterRequestDto("uid", "1234", "username", "nickname", null);
+        UserRegisterRequestDto info = new UserRegisterRequestDto("uid", "1234", "username", "nickname");
         String content = objectMapper.writeValueAsString(info);
 
         // when, then
         mockMvc.perform(MockMvcRequestBuilders.post("/api/sign/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content))
-                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
-                .andDo(MockMvcResultHandlers.print());
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
 
         verify(signService).register(info);
+    }
+
+    @Test
+    public void loginTest() throws Exception {
+        // given
+        UserLoginRequestDto info = new UserLoginRequestDto("uid", "1234");
+        String content = objectMapper.writeValueAsString(info);
+
+        // when, then
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/sign/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
+
+        verify(signService).login(info);
     }
 
 }
