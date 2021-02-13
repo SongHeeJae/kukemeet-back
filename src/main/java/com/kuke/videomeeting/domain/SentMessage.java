@@ -25,4 +25,11 @@ public class SentMessage implements Serializable {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "message_id", nullable = false)
     private Message message;
+
+    public static SentMessage createSentMessage(User user, Message message) {
+        SentMessage sentMessage = new SentMessage();
+        sentMessage.user = user;
+        sentMessage.message = message;
+        return sentMessage;
+    }
 }

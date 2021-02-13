@@ -21,10 +21,10 @@ public class Message extends CommonEntityDate{
     @Column(nullable = false)
     private String msg;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "message", cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "message", cascade = CascadeType.REMOVE)
     private ReceivedMessage receivedMessage;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "message", cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "message", cascade = CascadeType.REMOVE)
     private SentMessage sentMessage;
 
     public static Message createMessage(String msg) {

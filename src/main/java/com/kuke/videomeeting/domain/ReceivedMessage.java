@@ -25,4 +25,11 @@ public class ReceivedMessage implements Serializable {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "message_id")
     private Message message;
+
+    public static ReceivedMessage createReceivedMessage(User user, Message message) {
+        ReceivedMessage receivedMessage = new ReceivedMessage();
+        receivedMessage.user = user;
+        receivedMessage.message = message;
+        return receivedMessage;
+    }
 }
