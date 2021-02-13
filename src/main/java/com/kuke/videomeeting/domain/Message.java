@@ -21,15 +21,23 @@ public class Message extends CommonEntityDate{
     @Column(nullable = false)
     private String msg;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "message", cascade = CascadeType.REMOVE)
-    private ReceivedMessage receivedMessage;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sender_id")
+    private User sender;
+    private DeleteStatus senderDeleteStatus;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "message", cascade = CascadeType.REMOVE)
-    private SentMessage sentMessage;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "receiver_id")
+    private User receiver;
+    private DeleteStatus receiverDeleteStatus;
 
-    public static Message createMessage(String msg) {
+    public static Message createMessage(String msg, User sender, User receiver) {
         Message message = new Message();
         message.msg = msg;
+        message.sender = sender;
+        message.receiver = receiver;
+        message.senderDeleteStatus = DeleteStatus.N;
+        message.receiverDeleteStatus = DeleteStatus.N;
         return message;
     }
 }

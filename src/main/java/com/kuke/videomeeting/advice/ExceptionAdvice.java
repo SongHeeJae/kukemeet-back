@@ -67,16 +67,4 @@ public class ExceptionAdvice {
     public Result messageNotFoundException() {
         return responseService.getFailResult(-1007, "메시지를 찾을 수 없습니다.");
     }
-
-    @ExceptionHandler(SentMessageNotFoundException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Result sentMessageNotFoundException() {
-        return responseService.getFailResult(-1008, "메시지 발신 내역을 찾을 수 없습니다.");
-    }
-
-    @ExceptionHandler(ReceivedMessageNotFoundException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Result receivedMessageNotFoundException() {
-        return responseService.getFailResult(-1009, "메시지 수신 내역을 찾을 수 없습니다.");
-    }
 }

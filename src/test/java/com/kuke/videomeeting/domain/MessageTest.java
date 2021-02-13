@@ -1,18 +1,13 @@
 package com.kuke.videomeeting.domain;
 
 import com.kuke.videomeeting.advice.exception.MessageNotFoundException;
-import com.kuke.videomeeting.advice.exception.ReceivedMessageNotFoundException;
-import com.kuke.videomeeting.advice.exception.SentMessageNotFoundException;
 import com.kuke.videomeeting.advice.exception.UserNotFoundException;
 import com.kuke.videomeeting.repository.message.MessageRepository;
-import com.kuke.videomeeting.repository.message.ReceivedMessageRepository;
-import com.kuke.videomeeting.repository.message.SentMessageRepository;
 import com.kuke.videomeeting.repository.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.annotation.Rollback;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -25,8 +20,6 @@ class MessageTest {
 
     @PersistenceContext
     private EntityManager em;
-    @Autowired private SentMessageRepository sentMessageRepository;
-    @Autowired private ReceivedMessageRepository receivedMessageRepository;
     @Autowired private MessageRepository messageRepository;
     @Autowired private UserRepository userRepository;
 
@@ -43,35 +36,28 @@ class MessageTest {
         User sender = userRepository.findByUid("sender").orElseThrow(UserNotFoundException::new);
         User receiver = userRepository.findByUid("receiver").orElseThrow(UserNotFoundException::new);
         String msg = "this is message.";
-        Message message = Message.createMessage(msg);
-        SentMessage sentMessage = SentMessage.createSentMessage(sender, message);
-        ReceivedMessage receivedMessage = ReceivedMessage.createReceivedMessage(receiver, message);
+        Message message = Message.createMessage(msg, sender, receiver);
 
         // when
         messageRepository.save(message);
-        sentMessageRepository.save(sentMessage);
-        receivedMessageRepository.save(receivedMessage);
         em.flush();
         em.clear();
 
         // then
-        Message resultMessage = messageRepository.findById(message.getId()).orElseThrow(MessageNotFoundException::new);
-        SentMessage resultSentMessage = sentMessageRepository.findById(sentMessage.getId()).orElseThrow(SentMessageNotFoundException::new);
-        ReceivedMessage resultReceivedMessage = receivedMessageRepository.findById(receivedMessage.getId()).orElseThrow(ReceivedMessageNotFoundException::new);
-
-        assertThat(resultMessage.getId()).isEqualTo(resultSentMessage.getMessage().getId());
-        assertThat(resultMessage.getId()).isEqualTo(resultReceivedMessage.getMessage().getId());
+        Message result = messageRepository.findById(message.getId()).orElseThrow(MessageNotFoundException::new);
+        assertThat(result.getSender().getId()).isEqualTo(sender.getId());
+        assertThat(result.getReceiver().getId()).isEqualTo(receiver.getId());
+        assertThat(result.getMsg()).isEqualTo(msg);
+        assertThat(result.getReceiverDeleteStatus()).isEqualTo(DeleteStatus.N);
+        assertThat(result.getSenderDeleteStatus()).isEqualTo(DeleteStatus.N);
     }
 
     @Test
-    public void DeleteMessageWithSentAndReceivedMessageByCascade() {
+    public void DeleteMessageTest() {
         // given
         User sender = userRepository.findByUid("sender").orElseThrow(UserNotFoundException::new);
         User receiver = userRepository.findByUid("receiver").orElseThrow(UserNotFoundException::new);
-        String msg = "this is message.";
-        Message message = messageRepository.save(Message.createMessage(msg));
-        SentMessage sentMessage = sentMessageRepository.save(SentMessage.createSentMessage(sender, message));
-        ReceivedMessage receivedMessage = receivedMessageRepository.save(ReceivedMessage.createReceivedMessage(receiver, message));
+        Message message = messageRepository.save(Message.createMessage("msg", sender, receiver));
         em.flush();
         em.clear();
 
@@ -79,11 +65,8 @@ class MessageTest {
         messageRepository.deleteById(message.getId());
 
         // then
-        assertThatThrownBy(() -> sentMessageRepository.findById(sentMessage.getId()).orElseThrow(SentMessageNotFoundException::new))
-                .isInstanceOf(SentMessageNotFoundException.class);
-        assertThatThrownBy(() -> receivedMessageRepository.findById(receivedMessage.getId()).orElseThrow(ReceivedMessageNotFoundException::new))
-                .isInstanceOf(ReceivedMessageNotFoundException.class);
-
+        assertThatThrownBy(() -> messageRepository.findById(message.getId()).orElseThrow(MessageNotFoundException::new))
+                .isInstanceOf(MessageNotFoundException.class);
     }
 
 }
