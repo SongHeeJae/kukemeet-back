@@ -66,5 +66,17 @@ public class User extends CommonEntityDate{
         this.refreshToken = refreshToken;
     }
 
+    public void changeUsername(String username) {
+        this.username = username;
+    }
+
+    public void changeNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void changePassword(String password) {
+        this.password = password;
+    }
+
 
 }

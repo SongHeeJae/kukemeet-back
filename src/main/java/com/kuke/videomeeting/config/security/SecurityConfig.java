@@ -8,12 +8,12 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtTokenProvider jwtTokenProvider;
-
 
     @Override
     public void configure(WebSecurity web) throws Exception {
@@ -31,7 +31,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                     .authorizeRequests()
                         .antMatchers("/api/sign/", "/api/sign/**").permitAll()
-                        .antMatchers(HttpMethod.GET, "/api/users/**", "/api/users/").permitAll()
+                        .antMatchers(HttpMethod.GET, "/exception", "/exception/**", "/api/users", "/api/users/**").permitAll()
+                        .antMatchers("/api/users/{userId}").access("@guard.checkOwnUserIdByJwt(authentication, #userId)")
                         .anyRequest().authenticated()
                 .and()
                     .exceptionHandling().accessDeniedHandler(new CustomAccessDeniedHandler())
