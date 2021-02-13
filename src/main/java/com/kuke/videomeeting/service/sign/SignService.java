@@ -2,6 +2,7 @@ package com.kuke.videomeeting.service.sign;
 
 import com.kuke.videomeeting.advice.exception.LoginFailureException;
 import com.kuke.videomeeting.advice.exception.UserNicknameAlreadyExistsException;
+import com.kuke.videomeeting.advice.exception.UserNotFoundException;
 import com.kuke.videomeeting.advice.exception.UserUidAlreadyExistsException;
 import com.kuke.videomeeting.config.security.JwtTokenProvider;
 import com.kuke.videomeeting.domain.Role;
@@ -12,6 +13,7 @@ import com.kuke.videomeeting.model.dto.user.UserLoginResponseDto;
 import com.kuke.videomeeting.model.dto.user.UserRegisterRequestDto;
 import com.kuke.videomeeting.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,14 +44,28 @@ public class SignService {
         );
     }
 
+    @Transactional
     public UserLoginResponseDto login(UserLoginRequestDto requestDto) {
         User user = userRepository.findByUid(requestDto.getUid()).orElseThrow(LoginFailureException::new);
-        if(!passwordEncoder.matches(requestDto.getPassword(), user.getPassword()))
-            throw new LoginFailureException();
-        String refreshToken = createRefreshToken();
+        if(!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) throw new LoginFailureException();
+        String userId = String.valueOf(user.getId());
+        String refreshToken = createRefreshToken(userId);
         user.changeRefreshToken(refreshToken);
-        return new UserLoginResponseDto(jwtTokenProvider.createToken(String.valueOf(user.getId())), refreshToken, UserDto.convertUserToDto(user));
+        return new UserLoginResponseDto(jwtTokenProvider.createToken(userId), refreshToken, UserDto.convertUserToDto(user));
     }
+
+    @Transactional
+    public UserLoginResponseDto refreshToken(String refreshToken) {
+        String token = jwtTokenProvider.removeType(refreshToken);
+        if(!jwtTokenProvider.validateToken(token)) throw new AccessDeniedException("");
+        String userId = jwtTokenProvider.getUserId(token);
+        User user = userRepository.findById(Long.valueOf(userId)).orElseThrow(UserNotFoundException::new);
+        if(!user.getRefreshToken().equals(refreshToken)) throw new AccessDeniedException("");
+        String newRefreshToken = createRefreshToken(userId);
+        user.changeRefreshToken(newRefreshToken);
+        return new UserLoginResponseDto(jwtTokenProvider.createToken(userId), newRefreshToken, UserDto.convertUserToDto(user));
+    }
+
 
 
     private void validateDuplicateUserByUid(String uid) {
@@ -65,8 +81,8 @@ public class SignService {
             new UserUidAlreadyExistsException();
     }
 
-    private String createRefreshToken() {
-        return jwtTokenProvider.createRefreshToken();
+    private String createRefreshToken(String userId) {
+        return jwtTokenProvider.createRefreshToken(userId);
     }
 
 }

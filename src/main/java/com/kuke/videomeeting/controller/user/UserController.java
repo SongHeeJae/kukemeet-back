@@ -24,7 +24,7 @@ public class UserController {
     }
 
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "access-token", required = true, dataType = "String", paramType = "header")
+            @ApiImplicitParam(name = "Authorization", value = "access-token", required = true, dataType = "String", paramType = "header")
     })
     @DeleteMapping("/users/{userId}")
     public Result deleteUser(@PathVariable Long userId) {

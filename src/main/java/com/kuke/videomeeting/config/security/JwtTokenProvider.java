@@ -21,7 +21,7 @@ public class JwtTokenProvider {
 
     @Value("spring.jwt.secret")
     private String secretKey;
-
+    private String type = "Bearer ";
     private long tokenValidMillisecond = 1000L * 60 * 30; // 30분
     private long refreshTokenValidMillisecond = 1000L * 60 * 60 * 24 * 7; // 7일
 
@@ -33,10 +33,10 @@ public class JwtTokenProvider {
     }
 
     // jwt 토큰 생성
-    public String createToken(String userPk) {
-        Claims claims = Jwts.claims().setSubject(userPk);
+    public String createToken(String userId) {
+        Claims claims = Jwts.claims().setSubject(userId);
         Date now = new Date();
-        return Jwts.builder()
+        return type + Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + tokenValidMillisecond))
@@ -45,9 +45,11 @@ public class JwtTokenProvider {
     }
 
     // jwt refresh 토큰 생성
-    public String createRefreshToken() {
+    public String createRefreshToken(String userId) {
+        Claims claims = Jwts.claims().setSubject(userId);
         Date now = new Date();
-        return Jwts.builder()
+        return type + Jwts.builder()
+                .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + refreshTokenValidMillisecond))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
@@ -56,12 +58,12 @@ public class JwtTokenProvider {
 
     // jwt 토큰으로 인증 정보 조회
     public Authentication getAuthentication(String token) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(getUserPk(token));
+        UserDetails userDetails = userDetailsService.loadUserByUsername(getUserId(token));
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
     // jwt 토큰에서 회원 구별 정보 추출
-    public String getUserPk(String token) {
+    public String getUserId(String token) {
         try {
             return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
         } catch(ExpiredJwtException e) {
@@ -69,8 +71,13 @@ public class JwtTokenProvider {
         }
     }
 
+    public String removeType(String tokenWithType) {
+        return tokenWithType == null || tokenWithType.length() <= type.length() ?
+                null : tokenWithType.substring(type.length());
+    }
+
     public String resolveToken(HttpServletRequest req) {
-        return req.getHeader("X-AUTH-TOKEN");
+        return removeType(req.getHeader("Authorization"));
     }
 
     public Duration getRemainingSeconds(String jwtToken) {

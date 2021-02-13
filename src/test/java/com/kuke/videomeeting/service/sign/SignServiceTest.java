@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Collections;
@@ -82,11 +83,64 @@ class SignServiceTest {
 
         // then
         verify(jwtTokenProvider).createToken(anyString());
-        verify(jwtTokenProvider).createRefreshToken();
+        verify(jwtTokenProvider).createRefreshToken(anyString());
         assertThat(result.getInfo().getUid()).isEqualTo(requestDto.getUid());
     }
 
-    private Optional<User> createUserEntityByUserRegisterRequest(UserRegisterRequestDto requestDto) {
+    @Test
+    public void refreshTokenTest() {
+        // given
+        String refreshToken = "Bearer refreshToken";
+        String newAccessToken = "Bearer newAccessToken";
+        String newRefreshToken = "Bearer newRefreshToken";
+        User user = User.createUser("uid", "password", "username", "nickname", null, null);
+        user.changeRefreshToken(refreshToken);
+        given(userRepository.findById(anyLong())).willReturn(Optional.ofNullable(user));
+        given(jwtTokenProvider.removeType(anyString())).willReturn("refreshToken");
+        given(jwtTokenProvider.validateToken(anyString())).willReturn(true);
+        given(jwtTokenProvider.getUserId(anyString())).willReturn("1");
+        given(jwtTokenProvider.createToken(anyString())).willReturn(newAccessToken);
+        given(jwtTokenProvider.createRefreshToken(anyString())).willReturn(newRefreshToken);
+
+        // when
+        UserLoginResponseDto result = signService.refreshToken(refreshToken);
+
+        // then
+        assertThat(result.getAccessToken()).isEqualTo(newAccessToken);
+        assertThat(result.getRefreshToken()).isEqualTo(newRefreshToken);
+        assertThat(result.getInfo().getUid()).isEqualTo("uid");
+    }
+
+    @Test
+    public void refreshTokenExceptionByInvalidateTokenTest() {
+        // given
+        String refreshToken = "Bearer refreshToken";
+        User user = User.createUser("uid", "password", "username", "nickname", null, null);
+        user.changeRefreshToken(refreshToken);
+        given(jwtTokenProvider.removeType(anyString())).willReturn("refreshToken");
+        given(jwtTokenProvider.validateToken(anyString())).willReturn(false);
+
+        // when, then
+        assertThatThrownBy(() -> signService.refreshToken(refreshToken)).isInstanceOf(AccessDeniedException.class);
+    }
+
+    @Test
+    public void refreshTokenExceptionByDifferentTokenTest() {
+        // given
+        String refreshToken = "Bearer refreshToken";
+        User user = User.createUser("uid", "password", "username", "nickname", null, null);
+        user.changeRefreshToken(refreshToken + "different");
+        given(userRepository.findById(anyLong())).willReturn(Optional.ofNullable(user));
+        given(jwtTokenProvider.removeType(anyString())).willReturn("refreshToken");
+        given(jwtTokenProvider.validateToken(anyString())).willReturn(true);
+        given(jwtTokenProvider.getUserId(anyString())).willReturn("1");
+
+        // when, then
+        assertThatThrownBy(() -> signService.refreshToken(refreshToken)).isInstanceOf(AccessDeniedException.class);
+    }
+
+
+        private Optional<User> createUserEntityByUserRegisterRequest(UserRegisterRequestDto requestDto) {
         return Optional.ofNullable(User.createUser(
                 requestDto.getUid(), requestDto.getPassword(), requestDto.getUsername(), requestDto.getNickname(),
                 null, Collections.singletonList(Role.ROLE_NORMAL))

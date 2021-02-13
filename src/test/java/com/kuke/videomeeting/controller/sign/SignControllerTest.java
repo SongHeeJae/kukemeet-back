@@ -73,4 +73,17 @@ class SignControllerTest {
         verify(signService).login(info);
     }
 
+    @Test
+    public void refreshTokenTest() throws Exception {
+        // given
+        String refreshToken = "Bearer refreshToken";
+
+        // when, then
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/sign/refresh-token")
+                .header("Authorization", refreshToken))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
+
+        verify(signService).refreshToken(refreshToken);
+    }
+
 }
