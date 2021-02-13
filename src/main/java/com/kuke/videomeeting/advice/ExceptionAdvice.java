@@ -67,4 +67,10 @@ public class ExceptionAdvice {
     public Result messageNotFoundException() {
         return responseService.getFailResult(-1007, "메시지를 찾을 수 없습니다.");
     }
+
+    @ExceptionHandler(NotResourceOwnerException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result notResourceOwnerException() {
+        return responseService.getFailResult(-1007, "해당 자원의 소유자가 아닙니다.");
+    }
 }

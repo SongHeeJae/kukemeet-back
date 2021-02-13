@@ -25,8 +25,8 @@ public class CustomUserDetailService implements UserDetailsService {
     private final UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String userPk) {
-        User user = userRepository.findById(Long.valueOf(userPk)).orElseGet(
+    public UserDetails loadUserByUsername(String userId) {
+        User user = userRepository.findById(Long.valueOf(userId)).orElseGet(
                 () -> User.createUser(null, null, null, null, null, null)
         );
         return new CustomUserDetails(

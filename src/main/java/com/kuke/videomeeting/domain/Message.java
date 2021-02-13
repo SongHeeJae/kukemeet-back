@@ -24,11 +24,15 @@ public class Message extends CommonEntityDate{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sender_id")
     private User sender;
+
+    @Enumerated(EnumType.STRING)
     private DeleteStatus senderDeleteStatus;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "receiver_id")
     private User receiver;
+
+    @Enumerated(EnumType.STRING)
     private DeleteStatus receiverDeleteStatus;
 
     public static Message createMessage(String msg, User sender, User receiver) {
@@ -40,4 +44,14 @@ public class Message extends CommonEntityDate{
         message.receiverDeleteStatus = DeleteStatus.N;
         return message;
     }
+
+    public void changeSenderDeleteStatus(DeleteStatus deleteStatus) {
+        this.senderDeleteStatus = deleteStatus;
+    }
+
+    public void changReceiverDeleteStatus(DeleteStatus deleteStatus) {
+        this.receiverDeleteStatus = deleteStatus;
+    }
+
+
 }
