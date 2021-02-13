@@ -140,7 +140,7 @@ class SignServiceTest {
     }
 
 
-        private Optional<User> createUserEntityByUserRegisterRequest(UserRegisterRequestDto requestDto) {
+    private Optional<User> createUserEntityByUserRegisterRequest(UserRegisterRequestDto requestDto) {
         return Optional.ofNullable(User.createUser(
                 requestDto.getUid(), requestDto.getPassword(), requestDto.getUsername(), requestDto.getNickname(),
                 null, Collections.singletonList(Role.ROLE_NORMAL))

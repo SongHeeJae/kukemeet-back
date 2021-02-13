@@ -28,14 +28,8 @@ class MessageTest {
     public void createMessageTest() {
 
         // given
-        Message message = Message.createMessage(
-                em.createQuery("select u from User u where u.uid = :uid", User.class)
-                        .setParameter("uid", "sender")
-                        .getSingleResult(),
-                em.createQuery("select u from User u where u.uid = :uid", User.class)
-                        .setParameter("uid", "receiver")
-                        .getSingleResult(),
-                "this is message.");
+        String msg = "this is message.";
+        Message message = Message.createMessage(msg);
 
         // when
         em.persist(message);
@@ -46,8 +40,6 @@ class MessageTest {
         Message result = em.createQuery("select m from Message m where m.id = :id", Message.class)
                 .setParameter("id", message.getId())
                 .getSingleResult();
-        assertThat(result.getReadingStatus()).isEqualTo(ReadingStatus.N);
-        assertThat(result.getSender().getUid()).isEqualTo("sender");
-        assertThat(result.getReceiver().getUid()).isEqualTo("receiver");
+        assertThat(result.getMsg()).isEqualTo(msg);
     }
 }

@@ -45,12 +45,6 @@ public class User extends CommonEntityDate{
     @OneToMany(mappedBy = "friend")
     private List<Friend> AddedMe;
 
-    @OneToMany(mappedBy = "sender")
-    private List<Message> sendingMessages;
-
-    @OneToMany(mappedBy = "receiver")
-    private List<Message> receivingMessages;
-
     public static User createUser(String uid, String password, String username, String nickname, String provider, List<Role> roles) {
         User user = new User();
         user.uid = uid;
