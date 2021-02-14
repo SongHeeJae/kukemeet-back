@@ -29,7 +29,7 @@ public class MessageController {
             @ApiIgnore @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam(value = "lastMessageId", required = false) Long lastMessageId,
             @RequestParam(value = "limit", defaultValue = "15") int limit) {
-        return responseService.getSingleResult(messageService.readAllSentMessagesUsingScroll(userDetails.getId(), lastMessageId, limit));
+        return responseService.getListResult(messageService.readAllSentMessagesUsingScroll(userDetails.getId(), lastMessageId, limit));
     }
 
     @ApiImplicitParams({
@@ -40,7 +40,7 @@ public class MessageController {
             @ApiIgnore @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam(value = "lastMessageId", required = false) Long lastMessageId,
             @RequestParam(value = "limit", defaultValue = "15") int limit) {
-        return responseService.getSingleResult(messageService.readAllReceivedMessagesUsingScroll(userDetails.getId(), lastMessageId, limit));
+        return responseService.getListResult(messageService.readAllReceivedMessagesUsingScroll(userDetails.getId(), lastMessageId, limit));
     }
 
     @ApiImplicitParams({

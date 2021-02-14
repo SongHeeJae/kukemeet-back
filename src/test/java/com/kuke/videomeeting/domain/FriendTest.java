@@ -42,10 +42,10 @@ class FriendTest {
         em.clear();
 
         // then
-        Friend result = em.createQuery("select f from Friend f where f.user.id = :id", Friend.class)
-                .setParameter("id", friend.getUser().getId())
+        Friend result = em.createQuery("select f from Friend f where f.from.id = :id", Friend.class)
+                .setParameter("id", friend.getFrom().getId())
                 .getSingleResult();
-        assertThat(result.getFriend().getId()).isEqualTo(friend.getFriend().getId());
+        assertThat(result.getTo().getId()).isEqualTo(friend.getTo().getId());
     }
 
 

@@ -12,20 +12,24 @@ import java.io.Serializable;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class Friend implements Serializable {
+public class Friend {
 
-    @Id @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "friend_id")
+    private Long id;
 
-    @Id @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "friend_id")
-    private User friend;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "from_id")
+    private User from;
 
-    public static Friend createFriend(User user, User friend) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "to_id")
+    private User to;
+
+    public static Friend createFriend(User from, User to) {
         Friend f = new Friend();
-        f.user = user;
-        f.friend = friend;
+        f.from = from;
+        f.to = to;
         return f;
     }
 }

@@ -17,6 +17,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -24,14 +27,14 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
 
-    public Slice<MessageDto> readAllSentMessagesUsingScroll(Long userId, Long lastMessageId, int limit) {
+    public List<MessageDto> readAllSentMessagesUsingScroll(Long userId, Long lastMessageId, int limit) {
         return messageRepository.findSentMessagesByUserIdOrderByCreatedAt(userId, lastMessageId != null ? lastMessageId : Long.MAX_VALUE, PageRequest.of(0, limit))
-                .map(m -> MessageDto.convertMessageToDto(m));
+                .getContent().stream().map(m -> MessageDto.convertMessageToDto(m)).collect(Collectors.toList());
     }
 
-    public Slice<MessageDto> readAllReceivedMessagesUsingScroll(Long userId, Long lastMessageId, int limit) {
+    public List<MessageDto> readAllReceivedMessagesUsingScroll(Long userId, Long lastMessageId, int limit) {
         return messageRepository.findReceivedMessagesByUserIdOrderByCreatedAt(userId, lastMessageId != null ? lastMessageId : Long.MAX_VALUE, PageRequest.of(0, limit))
-                .map(m -> MessageDto.convertMessageToDto(m));
+                .stream().map(m -> MessageDto.convertMessageToDto(m)).collect(Collectors.toList());
     }
 
     @Transactional

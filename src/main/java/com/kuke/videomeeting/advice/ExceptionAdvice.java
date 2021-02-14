@@ -73,4 +73,17 @@ public class ExceptionAdvice {
     public Result notResourceOwnerException() {
         return responseService.getFailResult(-1007, "해당 자원의 소유자가 아닙니다.");
     }
+
+    @ExceptionHandler(FriendNotFoundException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result friendNotFoundException() {
+        return responseService.getFailResult(-1008, "해당 친구 관계를 찾을 수 없습니다.");
+    }
+
+    @ExceptionHandler(AlreadyFriendException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result alreadyFriendException() {
+        return responseService.getFailResult(-1009, "이미 친구로 등록되었습니다.");
+    }
+
 }

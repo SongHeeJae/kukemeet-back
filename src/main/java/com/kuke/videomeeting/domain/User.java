@@ -39,12 +39,6 @@ public class User extends CommonEntityDate{
     @Enumerated(EnumType.STRING)
     private List<Role> roles = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
-    private List<Friend> friends;
-
-    @OneToMany(mappedBy = "friend")
-    private List<Friend> AddedMe;
-
     public static User createUser(String uid, String password, String username, String nickname, String provider, List<Role> roles) {
         User user = new User();
         user.uid = uid;
