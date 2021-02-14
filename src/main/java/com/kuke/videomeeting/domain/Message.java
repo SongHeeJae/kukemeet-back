@@ -49,7 +49,7 @@ public class Message extends CommonEntityDate{
         this.senderDeleteStatus = deleteStatus;
     }
 
-    public void changReceiverDeleteStatus(DeleteStatus deleteStatus) {
+    public void changeReceiverDeleteStatus(DeleteStatus deleteStatus) {
         this.receiverDeleteStatus = deleteStatus;
     }
 

@@ -17,8 +17,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -27,12 +25,12 @@ public class MessageService {
     private final UserRepository userRepository;
 
     public Slice<MessageDto> readAllSentMessagesUsingScroll(Long userId, Long lastMessageId, int limit) {
-        return messageRepository.findSentMessagesByUserIdOrderByCreatedAt(userId, lastMessageId != null ? lastMessageId : Long.MAX_VALUE, PageRequest.of(0, limit, Sort.by("createdAt").descending()))
+        return messageRepository.findSentMessagesByUserIdOrderByCreatedAt(userId, lastMessageId != null ? lastMessageId : Long.MAX_VALUE, PageRequest.of(0, limit))
                 .map(m -> MessageDto.convertMessageToDto(m));
     }
 
     public Slice<MessageDto> readAllReceivedMessagesUsingScroll(Long userId, Long lastMessageId, int limit) {
-        return messageRepository.findReceivedMessagesByUserIdOrderByCreatedAt(userId, lastMessageId != null ? lastMessageId : Long.MAX_VALUE, PageRequest.of(0, limit, Sort.by("createdAt").descending()))
+        return messageRepository.findReceivedMessagesByUserIdOrderByCreatedAt(userId, lastMessageId != null ? lastMessageId : Long.MAX_VALUE, PageRequest.of(0, limit))
                 .map(m -> MessageDto.convertMessageToDto(m));
     }
 
@@ -62,7 +60,7 @@ public class MessageService {
         if(message.getSenderDeleteStatus().equals(DeleteStatus.Y)) {
             messageRepository.delete(message);
         } else {
-            message.changReceiverDeleteStatus(DeleteStatus.Y);
+            message.changeReceiverDeleteStatus(DeleteStatus.Y);
         }
     }
 
