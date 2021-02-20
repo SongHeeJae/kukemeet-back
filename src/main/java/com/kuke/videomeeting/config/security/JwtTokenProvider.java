@@ -1,6 +1,7 @@
 package com.kuke.videomeeting.config.security;
 
 import io.jsonwebtoken.*;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,6 +18,7 @@ import java.util.Date;
 
 @Component
 @RequiredArgsConstructor
+@Getter
 public class JwtTokenProvider {
 
     @Value("spring.jwt.secret")
