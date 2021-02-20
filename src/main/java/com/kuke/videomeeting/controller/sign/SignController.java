@@ -41,7 +41,8 @@ public class SignController {
              @ApiIgnore HttpServletResponse response,
             @RequestBody UserLoginRequestDto requestDto) {
         UserLoginResponseDto result = signService.login(requestDto);
-        response.addCookie(createRefreshTokenCookie(result.getRefreshToken()));
+        response.addCookie(createTokenCookie(result.getAccessToken(), "kuke-access-token", (int) jwtTokenProvider.getTokenValidMillisecond() / 1000));
+        response.addCookie(createTokenCookie(result.getRefreshToken(), "kuke-refresh-token", (int) jwtTokenProvider.getRefreshTokenValidMillisecond() / 1000));
         return responseService.getSingleResult(result);
     }
 
@@ -54,14 +55,15 @@ public class SignController {
             @ApiIgnore HttpServletResponse response,
             @RequestHeader(value="Authorization") String refreshToken) {
         UserLoginResponseDto result = signService.refreshToken(refreshToken);
-        response.addCookie(createRefreshTokenCookie(result.getRefreshToken()));
+        response.addCookie(createTokenCookie(result.getAccessToken(), "kuke-access-token", (int) jwtTokenProvider.getTokenValidMillisecond() / 1000));
+        response.addCookie(createTokenCookie(result.getRefreshToken(), "kuke-refresh-token", (int) jwtTokenProvider.getRefreshTokenValidMillisecond() / 1000));
         return responseService.getSingleResult(result);
     }
 
-    private Cookie createRefreshTokenCookie(String refreshToken) {
-        Cookie cookie = new Cookie("kuke-refresh-token", refreshToken);
-        cookie.setMaxAge((int)jwtTokenProvider.getRefreshTokenValidMillisecond() / 1000);
-        cookie.setSecure(true);
+    private Cookie createTokenCookie(String token, String name, int maxAge) {
+        Cookie cookie = new Cookie(name, token);
+        cookie.setMaxAge(maxAge);
+//        cookie.setSecure(true);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         return cookie;
