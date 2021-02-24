@@ -45,6 +45,18 @@ class UserControllerTest {
     }
 
     @Test
+    public void readUserByNicknameTest() throws Exception {
+        // given
+        String userNickname = "nickname";
+
+        // when, then
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/users/nickname/{nickname}", userNickname))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        verify(userService).readUserByNickname(userNickname);
+    }
+
+    @Test
     public void deleteUserTest() throws Exception {
         // given
         Long userId = 1L;

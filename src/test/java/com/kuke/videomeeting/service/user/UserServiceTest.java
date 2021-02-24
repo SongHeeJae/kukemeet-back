@@ -14,8 +14,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
@@ -54,6 +53,19 @@ class UserServiceTest {
 
         // then
         verify(userRepository).delete(any());
+    }
+
+    @Test
+    public void readUserByNicknameTest() {
+        // given
+        given(userRepository.findByNickname(anyString())).willReturn(Optional.ofNullable(User.createUser("uid", "password", "username",
+                "nickname", null, null)));
+
+        // when
+        UserDto result = userService.readUserByNickname(anyString());
+
+        // then
+        assertThat(result.getNickname()).isEqualTo("nickname");
     }
 
 

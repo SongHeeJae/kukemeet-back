@@ -29,6 +29,11 @@ public class UserController {
         return responseService.getSingleResult(userService.readUser(userDetails.getId()));
     }
 
+    @GetMapping("/users/nickname/{nickname}")
+    public Result readUserByNickname(@PathVariable String nickname) {
+        return responseService.getSingleResult(userService.readUserByNickname(nickname));
+    }
+
     @GetMapping("/users/{userId}")
     public Result readUser(@PathVariable Long userId) {
         return responseService.getSingleResult(userService.readUser(userId));

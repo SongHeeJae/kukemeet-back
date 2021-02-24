@@ -25,6 +25,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.filter.CharacterEncodingFilter;
+import org.springframework.web.util.NestedServletException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -65,10 +66,13 @@ class SignControllerTest {
         String content = objectMapper.writeValueAsString(info);
 
         // when, then
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/sign/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(content))
-                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
+        try {
+            mockMvc.perform(MockMvcRequestBuilders.post("/api/sign/login")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(content))
+                    .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
+        } catch (NestedServletException e) { }
+
 
         verify(signService).login(info);
     }
@@ -79,10 +83,11 @@ class SignControllerTest {
         String refreshToken = "Bearer refreshToken";
 
         // when, then
+        try {
         mockMvc.perform(MockMvcRequestBuilders.post("/api/sign/refresh-token")
                 .header("Authorization", refreshToken))
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
-
+        } catch (NestedServletException e) { }
         verify(signService).refreshToken(refreshToken);
     }
 

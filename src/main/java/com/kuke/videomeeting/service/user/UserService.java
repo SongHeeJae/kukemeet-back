@@ -26,4 +26,8 @@ public class UserService {
         return UserDto.convertUserToDto(user);
     }
 
+    public UserDto readUserByNickname(String nickname) {
+        User user = userRepository.findByNickname(nickname).orElseThrow(UserNotFoundException::new);
+        return UserDto.convertUserToDto(user);
+    }
 }
