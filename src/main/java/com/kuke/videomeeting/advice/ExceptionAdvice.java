@@ -6,7 +6,6 @@ import com.kuke.videomeeting.service.common.ResponseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -84,6 +83,24 @@ public class ExceptionAdvice {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result alreadyFriendException() {
         return responseService.getFailResult(-1009, "이미 친구로 등록되었습니다.");
+    }
+
+    @ExceptionHandler(CreateRoomFailureException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result createRoomFailureException() {
+        return responseService.getFailResult(-1010, "방 생성에 실패하였습니다.");
+    }
+
+    @ExceptionHandler(DestroyRoomFailureException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result destroyRoomFailureException() {
+        return responseService.getFailResult(-1011, "방 파괴에 실패하였습니다.");
+    }
+
+    @ExceptionHandler(ReadAllRoomsFailureException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result readAllRoomsFailureException() {
+        return responseService.getFailResult(-1012, "방 목록 조회에 실패하였습니다.");
     }
 
 }

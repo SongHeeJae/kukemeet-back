@@ -1,8 +1,8 @@
 package com.kuke.videomeeting.janus;
 
 import com.google.gson.Gson;
-import com.kuke.videomeeting.model.dto.janus.JanusVideoroomInfo;
-import com.kuke.videomeeting.model.dto.janus.JanusVideoroomListResult;
+import com.kuke.videomeeting.model.dto.room.RoomDto;
+import com.kuke.videomeeting.model.dto.room.RoomListResultDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -39,7 +39,7 @@ public class DestroyEmptyRoomTask implements Runnable{
             try {
                 Thread.sleep(detectEmptyRoomPeriod);
 
-                List<JanusVideoroomInfo> list = getVideoroomList(videoroomListRequest);
+                List<RoomDto> list = getVideoroomList(videoroomListRequest);
                 List<String> emptyRoomList = list.stream().filter(i -> i.getNum_participants() == 0)
                         .map(i -> i.getRoom()).collect(Collectors.toList()); // 빈 방 목록
 
@@ -72,9 +72,9 @@ public class DestroyEmptyRoomTask implements Runnable{
         return new HttpEntity<>(getJsonForDestructionVideoroom(room), headers);
     }
 
-    private List<JanusVideoroomInfo> getVideoroomList(HttpEntity<String> request) throws Exception {
+    private List<RoomDto> getVideoroomList(HttpEntity<String> request) throws Exception {
         ResponseEntity<String> response = sendPostRequest(request);
-        JanusVideoroomListResult result = gson.fromJson(response.getBody(), JanusVideoroomListResult.class);
+        RoomListResultDto result = gson.fromJson(response.getBody(), RoomListResultDto.class);
         return result.getResponse().getList();
     }
 

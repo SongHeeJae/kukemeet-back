@@ -1,4 +1,4 @@
-package com.kuke.videomeeting.model.dto.janus;
+package com.kuke.videomeeting.model.dto.room;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class JanusVideoroomInfo {
+public class RoomDto {
     private String room;
     private String description;
     private String pin_required;

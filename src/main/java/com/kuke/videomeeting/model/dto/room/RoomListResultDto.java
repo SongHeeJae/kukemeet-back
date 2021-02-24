@@ -1,4 +1,4 @@
-package com.kuke.videomeeting.model.dto.janus;
+package com.kuke.videomeeting.model.dto.room;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class JanusVideoroomListResult {
+public class RoomListResultDto {
     private String janus;
     private String transaction;
-    private JanusVideoroomListResponse response;
+    private RoomListResponseDto response;
 }
