@@ -19,7 +19,7 @@ public class DestroyEmptyRoomTask implements Runnable{
 
     private final RoomService roomService;
     private final Set<String> prevEmptyRooms; // 이전 검사에서 비어있다고 나온 방들
-    private final long detectEmptyRoomPeriod = 1000L * 10; // 해당 주기마다 빈 방 검사
+    private final long detectEmptyRoomPeriod = 1000L * 60; // 해당 주기마다 빈 방 검사
 
     @Override
     public void run() {
