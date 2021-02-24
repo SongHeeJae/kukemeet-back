@@ -22,7 +22,7 @@ public class JanusVideoroomInfo {
     private String video_svc;
     private String record;
     private String lock_record;
-    private String num_participants;
+    private int num_participants;
     private String audiolevel_ext;
     private String audiolevel_event;
     private String videoorient_ext;
