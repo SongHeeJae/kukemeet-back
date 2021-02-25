@@ -11,17 +11,21 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class MessageDto {
+public class SimpleMessageDto {
     private Long id;
     private String msg;
-    private UserDto sender;
-    private UserDto receiver;
+    private UserDto user;
     private LocalDateTime createdAt;
-    
-    public static MessageDto convertMessageToDto(Message message) {
-        return new MessageDto(message.getId(), message.getMsg(),
-                UserDto.convertUserToDto(message.getSender()),
+
+    public static SimpleMessageDto convertSentMessageToDto(Message message) {
+        return new SimpleMessageDto(message.getId(), message.getMsg(),
                 UserDto.convertUserToDto(message.getReceiver()),
+                message.getCreatedAt());
+    }
+
+    public static SimpleMessageDto convertReceivedMessageToDto(Message message) {
+        return new SimpleMessageDto(message.getId(), message.getMsg(),
+                UserDto.convertUserToDto(message.getSender()),
                 message.getCreatedAt());
     }
 }

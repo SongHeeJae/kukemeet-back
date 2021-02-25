@@ -3,6 +3,7 @@ package com.kuke.videomeeting.controller.message;
 import com.kuke.videomeeting.model.auth.CustomUserDetails;
 import com.kuke.videomeeting.model.dto.message.MessageCreateRequestDto;
 import com.kuke.videomeeting.model.dto.message.MessageDto;
+import com.kuke.videomeeting.model.dto.message.SimpleMessageDto;
 import com.kuke.videomeeting.model.dto.response.Result;
 import com.kuke.videomeeting.service.common.ResponseService;
 import com.kuke.videomeeting.service.message.MessageService;
@@ -35,7 +36,7 @@ public class MessageController {
             @ApiIgnore @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam(value = "lastMessageId", required = false) Long lastMessageId,
             @RequestParam(value = "limit", defaultValue = "15") int limit) {
-        Slice<MessageDto> result = messageService.readAllSentMessagesUsingScroll(userDetails.getId(), lastMessageId, limit);
+        Slice<SimpleMessageDto> result = messageService.readAllSentMessagesUsingScroll(userDetails.getId(), lastMessageId, limit);
         return responseService.getListResult(result.getContent(), result.hasNext());
     }
 
@@ -47,7 +48,7 @@ public class MessageController {
             @ApiIgnore @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam(value = "lastMessageId", required = false) Long lastMessageId,
             @RequestParam(value = "limit", defaultValue = "15") int limit) {
-        Slice<MessageDto> result = messageService.readAllReceivedMessagesUsingScroll(userDetails.getId(), lastMessageId, limit);
+        Slice<SimpleMessageDto> result = messageService.readAllReceivedMessagesUsingScroll(userDetails.getId(), lastMessageId, limit);
         return responseService.getListResult(result.getContent(), result.hasNext());
     }
 

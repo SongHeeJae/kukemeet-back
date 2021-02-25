@@ -8,6 +8,7 @@ import com.kuke.videomeeting.domain.Message;
 import com.kuke.videomeeting.domain.User;
 import com.kuke.videomeeting.model.dto.message.MessageCreateRequestDto;
 import com.kuke.videomeeting.model.dto.message.MessageDto;
+import com.kuke.videomeeting.model.dto.message.SimpleMessageDto;
 import com.kuke.videomeeting.repository.message.MessageRepository;
 import com.kuke.videomeeting.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,14 +28,14 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
 
-    public Slice<MessageDto> readAllSentMessagesUsingScroll(Long userId, Long lastMessageId, int limit) {
+    public Slice<SimpleMessageDto> readAllSentMessagesUsingScroll(Long userId, Long lastMessageId, int limit) {
         return messageRepository.findSentMessagesByUserIdOrderByCreatedAt(userId, lastMessageId != null ? lastMessageId : Long.MAX_VALUE, PageRequest.of(0, limit))
-                .map(m -> MessageDto.convertSentMessageToDto(m));
+                .map(m -> SimpleMessageDto.convertSentMessageToDto(m));
     }
 
-    public Slice<MessageDto> readAllReceivedMessagesUsingScroll(Long userId, Long lastMessageId, int limit) {
+    public Slice<SimpleMessageDto> readAllReceivedMessagesUsingScroll(Long userId, Long lastMessageId, int limit) {
         return messageRepository.findReceivedMessagesByUserIdOrderByCreatedAt(userId, lastMessageId != null ? lastMessageId : Long.MAX_VALUE, PageRequest.of(0, limit))
-                .map(m -> MessageDto.convertReceivedMessageToDto(m));
+                .map(m -> SimpleMessageDto.convertReceivedMessageToDto(m));
     }
 
     @Transactional
