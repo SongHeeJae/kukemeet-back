@@ -1,6 +1,7 @@
 package com.kuke.videomeeting.controller.sign;
 
 import com.kuke.videomeeting.config.security.JwtTokenProvider;
+import com.kuke.videomeeting.model.auth.CustomUserDetails;
 import com.kuke.videomeeting.model.dto.response.Result;
 import com.kuke.videomeeting.model.dto.user.UserLoginRequestDto;
 import com.kuke.videomeeting.model.dto.user.UserLoginResponseDto;
@@ -12,6 +13,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -58,6 +60,20 @@ public class SignController {
         response.addCookie(createTokenCookie(result.getAccessToken(), "kuke-access-token", (int) jwtTokenProvider.getTokenValidMillisecond() / 1000));
         response.addCookie(createTokenCookie(result.getRefreshToken(), "kuke-refresh-token", (int) jwtTokenProvider.getRefreshTokenValidMillisecond() / 1000));
         return responseService.getSingleResult(result);
+    }
+
+    @ApiOperation(value="로그아웃", notes = "로그아웃을 한다.")
+    @PostMapping(value = "/sign/logout")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "access-token", required = true, dataType = "String", paramType = "header")
+    })
+    public Result logout(
+            @ApiIgnore HttpServletResponse response,
+            @ApiIgnore @AuthenticationPrincipal CustomUserDetails userDetails) {
+        signService.logout(userDetails.getId());
+        response.addCookie(createTokenCookie("", "kuke-access-token", 0));
+        response.addCookie(createTokenCookie("", "kuke-refresh-token", 0));
+        return responseService.getSuccessResult();
     }
 
     private Cookie createTokenCookie(String token, String name, int maxAge) {

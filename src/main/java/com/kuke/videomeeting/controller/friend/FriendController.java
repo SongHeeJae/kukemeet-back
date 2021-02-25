@@ -38,7 +38,6 @@ public class FriendController {
     public Result createFriend(
             @ApiIgnore @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody FriendCreateRequestDto requestDto) {
-        System.out.println("requestDto = " + requestDto);
         return responseService.getSingleResult(friendService.createFriend(userDetails.getId(), requestDto));
     }
 

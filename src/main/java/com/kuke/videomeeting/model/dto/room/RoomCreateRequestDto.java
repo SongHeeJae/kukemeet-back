@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class RoomCreateRequestDto {
-    String description;
+    String title;
     String pin;
 }

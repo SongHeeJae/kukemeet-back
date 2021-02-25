@@ -87,7 +87,7 @@ public class RoomService {
                 "\"admin_secret\":\"" + adminSecret + "\", " +
                 "\"request\":{" +
                         "\"request\":\"create\"," +
-                        "\"description\":\"" + requestDto.getDescription() + "\"," +
+                        "\"description\":\"" + requestDto.getTitle() + "\"," +
                         "\"pin\":\"" + requestDto.getPin() + "\"," +
                         "\"publishers\":" + publishers +
                     "}" +

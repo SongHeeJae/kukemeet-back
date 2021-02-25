@@ -139,6 +139,21 @@ class SignServiceTest {
         assertThatThrownBy(() -> signService.refreshToken(refreshToken)).isInstanceOf(AccessDeniedException.class);
     }
 
+    @Test
+    public void logout() {
+        // given
+        User user = User.createUser("uid", "password", "username", "nickname", null, null);
+        user.changeRefreshToken("refresh-token");
+        given(userRepository.findById(anyLong())).willReturn(Optional.ofNullable(user));
+
+        // when
+        signService.logout(anyLong());
+
+        // then
+        assertThat(user.getRefreshToken()).isEqualTo("");
+
+    }
+
 
     private Optional<User> createUserEntityByUserRegisterRequest(UserRegisterRequestDto requestDto) {
         return Optional.ofNullable(User.createUser(

@@ -66,6 +66,12 @@ public class SignService {
         return new UserLoginResponseDto(jwtTokenProvider.createToken(userId), newRefreshToken, UserDto.convertUserToDto(user));
     }
 
+    @Transactional
+    public void logout(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        user.changeRefreshToken("");
+    }
+
 
 
     private void validateDuplicateUserByUid(String uid) {
