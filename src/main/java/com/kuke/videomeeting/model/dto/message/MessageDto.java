@@ -24,4 +24,18 @@ public class MessageDto {
                 UserDto.convertUserToDto(message.getReceiver()),
                 message.getCreatedAt());
     }
+
+    public static MessageDto convertSentMessageToDto(Message message) {
+        return new MessageDto(message.getId(), message.getMsg(),
+                null,
+                UserDto.convertUserToDto(message.getReceiver()),
+                message.getCreatedAt());
+    }
+
+    public static MessageDto convertReceivedMessageToDto(Message message) {
+        return new MessageDto(message.getId(), message.getMsg(),
+                UserDto.convertUserToDto(message.getSender()),
+                null,
+                message.getCreatedAt());
+    }
 }

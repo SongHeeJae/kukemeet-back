@@ -12,14 +12,19 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,6 +42,10 @@ class MessageControllerTest {
 
     @Test
     public void readAllSentMessagesUsingScrollTest() throws Exception {
+
+        given(messageService.readAllSentMessagesUsingScroll(any(), anyLong(), anyInt()))
+                .willReturn(new SliceImpl<>(List.of(), PageRequest.of(0, 10), true));
+
         mockMvc.perform(MockMvcRequestBuilders.get("/api/messages/sent?limit=10&lastMessageId=3"))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
@@ -45,6 +54,10 @@ class MessageControllerTest {
 
     @Test
     public void readAllReceivedMessagesUsingScrollTest() throws Exception {
+
+        given(messageService.readAllReceivedMessagesUsingScroll(any(), anyLong(), anyInt()))
+                .willReturn(new SliceImpl<>(List.of(), PageRequest.of(0, 10), true));
+
         mockMvc.perform(MockMvcRequestBuilders.get("/api/messages/received?limit=10&lastMessageId=3"))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 

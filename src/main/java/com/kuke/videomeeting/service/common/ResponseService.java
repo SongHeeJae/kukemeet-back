@@ -20,6 +20,15 @@ public class ResponseService {
     public <T> ListResult<T> getListResult(List<T> list) {
         ListResult<T> result = new ListResult<>();
         result.setData(list);
+        result.setHasNext(false);
+        setSuccessResult(result);
+        return result;
+    }
+
+    public <T> ListResult<T> getListResult(List<T> list, boolean hasNext) {
+        ListResult<T> result = new ListResult<>();
+        result.setData(list);
+        result.setHasNext(hasNext);
         setSuccessResult(result);
         return result;
     }

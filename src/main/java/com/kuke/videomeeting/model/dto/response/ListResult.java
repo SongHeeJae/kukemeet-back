@@ -13,4 +13,5 @@ import java.util.List;
 @ToString
 public class ListResult<T> extends Result {
     private List<T> data;
+    private boolean hasNext;
 }

@@ -27,14 +27,14 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
 
-    public List<MessageDto> readAllSentMessagesUsingScroll(Long userId, Long lastMessageId, int limit) {
+    public Slice<MessageDto> readAllSentMessagesUsingScroll(Long userId, Long lastMessageId, int limit) {
         return messageRepository.findSentMessagesByUserIdOrderByCreatedAt(userId, lastMessageId != null ? lastMessageId : Long.MAX_VALUE, PageRequest.of(0, limit))
-                .getContent().stream().map(m -> MessageDto.convertMessageToDto(m)).collect(Collectors.toList());
+                .map(m -> MessageDto.convertSentMessageToDto(m));
     }
 
-    public List<MessageDto> readAllReceivedMessagesUsingScroll(Long userId, Long lastMessageId, int limit) {
+    public Slice<MessageDto> readAllReceivedMessagesUsingScroll(Long userId, Long lastMessageId, int limit) {
         return messageRepository.findReceivedMessagesByUserIdOrderByCreatedAt(userId, lastMessageId != null ? lastMessageId : Long.MAX_VALUE, PageRequest.of(0, limit))
-                .stream().map(m -> MessageDto.convertMessageToDto(m)).collect(Collectors.toList());
+                .map(m -> MessageDto.convertReceivedMessageToDto(m));
     }
 
     @Transactional
