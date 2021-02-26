@@ -7,6 +7,7 @@ import com.kuke.videomeeting.advice.exception.UserNotFoundException;
 import com.kuke.videomeeting.domain.Friend;
 import com.kuke.videomeeting.domain.User;
 import com.kuke.videomeeting.model.dto.friend.FriendCreateRequestDto;
+import com.kuke.videomeeting.model.dto.friend.FriendDto;
 import com.kuke.videomeeting.model.dto.message.MessageDto;
 import com.kuke.videomeeting.model.dto.user.UserDto;
 import com.kuke.videomeeting.repository.friend.FriendRepository;
@@ -28,9 +29,9 @@ public class FriendService {
     private final FriendRepository friendRepository;
     private final UserRepository userRepository;
 
-    public List<UserDto> readAllMyFriends(Long userId) {
+    public List<FriendDto> readAllMyFriends(Long userId) {
         return friendRepository.findMyFriendsByUserIdOrderByUsername(userId).getContent()
-                .stream().map(f -> UserDto.convertUserToDto(f.getTo())).collect(Collectors.toList());
+                .stream().map(f -> FriendDto.convertFriendToDto(f)).collect(Collectors.toList());
     }
 
     @Transactional
