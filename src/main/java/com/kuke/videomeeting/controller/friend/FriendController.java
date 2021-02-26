@@ -25,7 +25,7 @@ public class FriendController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "access-token", required = true, dataType = "String", paramType = "header")
     })
-    @GetMapping("/friends")
+    @GetMapping("/friends/me")
     public Result readAllMyFriends(
             @ApiIgnore @AuthenticationPrincipal CustomUserDetails userDetails) {
         return responseService.getSingleResult(friendService.readAllMyFriends(userDetails.getId()));

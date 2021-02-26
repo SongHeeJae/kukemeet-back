@@ -38,7 +38,7 @@ class FriendControllerTest {
 
     @Test
     public void readAllMyFriendsTest() throws Exception{
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/friends"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/friends/me"))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
         verify(friendService).readAllMyFriends(any());
