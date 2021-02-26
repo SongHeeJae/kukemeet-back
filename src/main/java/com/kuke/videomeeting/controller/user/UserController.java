@@ -2,6 +2,7 @@ package com.kuke.videomeeting.controller.user;
 
 import com.kuke.videomeeting.model.auth.CustomUserDetails;
 import com.kuke.videomeeting.model.dto.response.Result;
+import com.kuke.videomeeting.model.dto.user.UserSearchDto;
 import com.kuke.videomeeting.service.common.ResponseService;
 import com.kuke.videomeeting.service.user.UserService;
 import io.swagger.annotations.Api;
@@ -27,6 +28,12 @@ public class UserController {
     @GetMapping("/users/me")
     public Result readMeByAccessToken(@ApiIgnore @AuthenticationPrincipal CustomUserDetails userDetails) {
         return responseService.getSingleResult(userService.readUser(userDetails.getId()));
+    }
+
+
+    @GetMapping("/users")
+    public Result readAllUsers(UserSearchDto searchDto) {
+        return responseService.getListResult(userService.readAllUsers(searchDto));
     }
 
     @GetMapping("/users/nickname/{nickname}")

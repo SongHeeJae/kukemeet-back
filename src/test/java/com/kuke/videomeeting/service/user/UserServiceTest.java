@@ -2,6 +2,7 @@ package com.kuke.videomeeting.service.user;
 
 import com.kuke.videomeeting.domain.User;
 import com.kuke.videomeeting.model.dto.user.UserDto;
+import com.kuke.videomeeting.model.dto.user.UserSearchDto;
 import com.kuke.videomeeting.repository.user.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -66,6 +69,22 @@ class UserServiceTest {
 
         // then
         assertThat(result.getNickname()).isEqualTo("nickname");
+    }
+    
+    @Test
+    public void readAllUsersTest() {
+
+        // given
+        UserSearchDto searchDto = new UserSearchDto();
+        given(userRepository.findAllUsersByCondition(anyString(), anyString(), anyString())).willReturn(Collections.emptyList());
+        
+        // when
+        List<UserDto> result = userService.readAllUsers(searchDto);
+
+        // then
+        assertThat(result.size()).isEqualTo(0);
+        verify(userRepository).findAllUsersByCondition(anyString(), anyString(), anyString());
+
     }
 
 

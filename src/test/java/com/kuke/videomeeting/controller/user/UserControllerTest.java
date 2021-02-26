@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -66,5 +67,13 @@ class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
 
         verify(userService).deleteUser(userId);
+    }
+
+    @Test
+    public void readAllUsersTest() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/users"))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
+
+        verify(userService).readAllUsers(any());
     }
 }
