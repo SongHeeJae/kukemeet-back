@@ -22,16 +22,16 @@ public class RoomController {
     private final RoomService roomService;
     private final ResponseService responseService;
 
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", value = "access-token", required = true, dataType = "String", paramType = "header")
-    })
-    @DeleteMapping("/rooms/{room}")
-    public Result destroyRoom(
-            @ApiIgnore @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable("room") String room) {
-        roomService.destroyRoom(room);
-        return responseService.getSuccessResult();
-    }
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "Authorization", value = "access-token", required = true, dataType = "String", paramType = "header")
+//    })
+//    @DeleteMapping("/rooms/{room}")
+//    public Result destroyRoom(
+//            @ApiIgnore @AuthenticationPrincipal CustomUserDetails userDetails,
+//            @PathVariable("room") String room) {
+//        roomService.destroyRoom(room);
+//        return responseService.getSuccessResult();
+//    }
 
     @GetMapping("/rooms")
     public Result readAllRooms() {
