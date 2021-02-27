@@ -8,10 +8,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class FriendDto {
+public class FriendDto implements Serializable {
     Long id;
     UserDto user;
 

@@ -1,5 +1,6 @@
 package com.kuke.videomeeting.service.user;
 
+import com.kuke.videomeeting.cache.CacheHandler;
 import com.kuke.videomeeting.domain.User;
 import com.kuke.videomeeting.model.dto.user.UserDto;
 import com.kuke.videomeeting.model.dto.user.UserSearchDto;
@@ -24,11 +25,9 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
-    @Mock
-    private UserRepository userRepository;
-
-    @InjectMocks
-    private UserService userService;
+    @Mock private UserRepository userRepository;
+    @Mock private CacheHandler cacheHandler;
+    @InjectMocks private UserService userService;
 
     @Test
     public void readUserTest() {

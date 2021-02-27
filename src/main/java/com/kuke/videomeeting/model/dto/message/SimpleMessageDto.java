@@ -6,12 +6,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class SimpleMessageDto {
+public class SimpleMessageDto implements Serializable {
     private Long id;
     private String msg;
     private UserDto user;
