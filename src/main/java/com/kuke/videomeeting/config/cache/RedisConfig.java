@@ -21,7 +21,7 @@ import java.util.Map;
 
 @EnableCaching
 @Configuration
-@Profile("local")
+@Profile({"local", "prod"})
 public class RedisConfig {
 
     @Value("${spring.redis.port}")
