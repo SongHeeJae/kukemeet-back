@@ -29,12 +29,12 @@ public class MessageService {
     private final UserRepository userRepository;
 
     public Slice<SimpleMessageDto> readAllSentMessagesUsingScroll(Long userId, Long lastMessageId, int limit) {
-        return messageRepository.findSentMessagesByUserIdOrderByCreatedAt(userId, lastMessageId != null ? lastMessageId : Long.MAX_VALUE, PageRequest.of(0, limit))
+        return messageRepository.findSentMessagesByUserIdOrderByCreatedAt(userId, lastMessageId, PageRequest.of(0, limit))
                 .map(m -> SimpleMessageDto.convertSentMessageToDto(m));
     }
 
     public Slice<SimpleMessageDto> readAllReceivedMessagesUsingScroll(Long userId, Long lastMessageId, int limit) {
-        return messageRepository.findReceivedMessagesByUserIdOrderByCreatedAt(userId, lastMessageId != null ? lastMessageId : Long.MAX_VALUE, PageRequest.of(0, limit))
+        return messageRepository.findReceivedMessagesByUserIdOrderByCreatedAt(userId, lastMessageId, PageRequest.of(0, limit))
                 .map(m -> SimpleMessageDto.convertReceivedMessageToDto(m));
     }
 

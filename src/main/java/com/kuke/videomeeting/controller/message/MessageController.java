@@ -34,7 +34,7 @@ public class MessageController {
     @GetMapping("/messages/sent")
     public Result readAllSentMessagesUsingScroll(
             @ApiIgnore @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestParam(value = "lastMessageId", required = false) Long lastMessageId,
+            @RequestParam(value = "lastMessageId", required = false, defaultValue = Long.MAX_VALUE + "") Long lastMessageId,
             @RequestParam(value = "limit", defaultValue = "15") int limit) {
         Slice<SimpleMessageDto> result = messageService.readAllSentMessagesUsingScroll(userDetails.getId(), lastMessageId, limit);
         return responseService.getListResult(result.getContent(), result.hasNext());
@@ -46,7 +46,7 @@ public class MessageController {
     @GetMapping("/messages/received")
     public Result readAllReceivedMessagesUsingScroll(
             @ApiIgnore @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestParam(value = "lastMessageId", required = false) Long lastMessageId,
+            @RequestParam(value = "lastMessageId", required = false, defaultValue = Long.MAX_VALUE + "") Long lastMessageId,
             @RequestParam(value = "limit", defaultValue = "15") int limit) {
         Slice<SimpleMessageDto> result = messageService.readAllReceivedMessagesUsingScroll(userDetails.getId(), lastMessageId, limit);
         return responseService.getListResult(result.getContent(), result.hasNext());
