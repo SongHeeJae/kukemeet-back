@@ -39,6 +39,18 @@ public class User extends CommonEntityDate{
     @Enumerated(EnumType.STRING)
     private List<Role> roles = new ArrayList<>();
 
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.REMOVE)
+    List<Message> receivedMessages;
+
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.REMOVE)
+    List<Message> sentMessages;
+
+    @OneToMany(mappedBy = "from", cascade = CascadeType.REMOVE)
+    List<Friend> myFriends;
+
+    @OneToMany(mappedBy = "to", cascade = CascadeType.REMOVE)
+    List<Friend> addedMe;
+
     public static User createUser(String uid, String password, String username, String nickname, String provider, List<Role> roles) {
         User user = new User();
         user.uid = uid;
