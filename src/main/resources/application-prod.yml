@@ -1,4 +1,11 @@
 spring:
-  config:
-    activate:
-      on-profile: prod
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        default_batch_fetch_size: 100
+    open-in-view: false
+logging.level:
+  org.hibernate.SQL: info
+#  org.hibernate.type: trace

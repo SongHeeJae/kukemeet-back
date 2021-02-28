@@ -1,5 +1,4 @@
 spring:
-
   datasource:
     url: jdbc:h2:tcp://localhost/~/videomeeting
     username: sa
@@ -20,3 +19,4 @@ spring:
 logging.level:
   org.hibernate.SQL: debug
 #  org.hibernate.type: trace
+

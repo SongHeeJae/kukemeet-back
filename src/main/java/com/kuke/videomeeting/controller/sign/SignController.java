@@ -53,7 +53,7 @@ public class SignController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "refresh-token", required = true, dataType = "String", paramType = "header")
     })
-    public Result refreshToken(
+public Result refreshToken(
             @ApiIgnore HttpServletResponse response,
             @RequestHeader(value="Authorization") String refreshToken) {
         UserLoginResponseDto result = signService.refreshToken(refreshToken);
