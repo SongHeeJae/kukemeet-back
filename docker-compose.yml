@@ -18,6 +18,9 @@ services:
     build: .
     volumes:
       - ../secret:/secret
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      TZ: Asia/Seoul
     ports:
       - 8080:8080
     depends_on:
