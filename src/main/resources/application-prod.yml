@@ -9,3 +9,7 @@ spring:
 logging.level:
   org.hibernate.SQL: info
 #  org.hibernate.type: trace
+
+janus:
+  admin:
+    server: https://media.kukemeet.kro.kr/admin
