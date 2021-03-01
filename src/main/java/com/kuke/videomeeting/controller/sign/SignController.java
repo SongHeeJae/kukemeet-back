@@ -79,7 +79,7 @@ public Result refreshToken(
     private Cookie createTokenCookie(String token, String name, int maxAge) {
         Cookie cookie = new Cookie(name, token);
         cookie.setMaxAge(maxAge);
-//        cookie.setSecure(true);
+        cookie.setSecure(true);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         return cookie;
