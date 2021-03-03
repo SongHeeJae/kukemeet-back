@@ -60,7 +60,7 @@ public class MessageService {
     @Transactional
     public void deleteMessageBySender(Long senderId, Long messageId) {
         Message message = messageRepository.findById(messageId).orElseThrow(MessageNotFoundException::new);
-        if(message.getSender().getId() != senderId) throw new NotResourceOwnerException();
+        if(!message.getSender().getId().equals(senderId)) throw new NotResourceOwnerException();
         if(message.getReceiverDeleteStatus().equals(DeleteStatus.Y)) {
             messageRepository.delete(message);
         } else {
@@ -72,7 +72,7 @@ public class MessageService {
     @Transactional
     public void deleteMessageByReceiver(Long receiverId, Long messageId) {
         Message message = messageRepository.findById(messageId).orElseThrow(MessageNotFoundException::new);
-        if(message.getReceiver().getId() != receiverId) throw new NotResourceOwnerException();
+        if(!message.getReceiver().getId().equals(receiverId)) throw new NotResourceOwnerException();
         if(message.getSenderDeleteStatus().equals(DeleteStatus.Y)) {
             messageRepository.delete(message);
         } else {

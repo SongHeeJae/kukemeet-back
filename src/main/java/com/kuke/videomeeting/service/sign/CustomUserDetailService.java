@@ -27,7 +27,7 @@ public class CustomUserDetailService implements UserDetailsService {
     private final UserRepository userRepository;
 
     @Override
-    @Cacheable(value = CacheKey.USER_DETAILS, key = "#userId")
+    @Cacheable(value = CacheKey.USER_DETAILS, key = "#userId", unless = "#result == null")
     public UserDetails loadUserByUsername(String userId) {
         User user = userRepository.findByIdWithRoles(Long.valueOf(userId)).orElseGet(
                 () -> User.createUser(null, null, null, null, null, null)
