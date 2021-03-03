@@ -82,7 +82,7 @@ public Result refreshToken(
         cookie.setSecure(true);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
-        cookie.setDomain("kukemeet.kro.kr");
+        cookie.setDomain("kukemeet.com");
         return cookie;
     }
 }
