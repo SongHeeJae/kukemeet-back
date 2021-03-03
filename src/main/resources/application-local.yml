@@ -9,7 +9,7 @@ spring:
 
 janus:
   admin:
-    server: http://media.kukemeet.kro.kr/admin
+    server: http://media.kukemeet.com/admin
 
 logging.level:
   org.hibernate.SQL: debug

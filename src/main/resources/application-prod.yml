@@ -12,4 +12,4 @@ logging.level:
 
 janus:
   admin:
-    server: https://media.kukemeet.kro.kr/admin
+    server: https://media.kukemeet.com/admin
