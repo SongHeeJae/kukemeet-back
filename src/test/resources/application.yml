@@ -14,6 +14,9 @@ spring:
       hibernate:
         default_batch_fetch_size: 100
     open-in-view: false
+  jwt:
+    secret:
+      test
 
 janus:
   admin:
@@ -21,3 +24,8 @@ janus:
     server: test
   room:
     secret: test
+
+cookie:
+  secure:
+    false
+  domain:

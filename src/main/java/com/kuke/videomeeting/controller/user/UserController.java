@@ -4,6 +4,7 @@ import com.kuke.videomeeting.advice.exception.NotResourceOwnerException;
 import com.kuke.videomeeting.model.auth.CustomUserDetails;
 import com.kuke.videomeeting.model.dto.response.Result;
 import com.kuke.videomeeting.model.dto.user.UserSearchDto;
+import com.kuke.videomeeting.model.dto.user.UserUpdateRequestDto;
 import com.kuke.videomeeting.service.common.ResponseService;
 import com.kuke.videomeeting.service.user.UserService;
 import io.swagger.annotations.Api;
@@ -46,6 +47,19 @@ public class UserController {
     @GetMapping("/users/{userId}")
     public Result readUser(@PathVariable Long userId) {
         return responseService.getSingleResult(userService.readUser(userId));
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "access-token", required = true, dataType = "String", paramType = "header")
+    })
+    @PutMapping("/users/{userId}")
+    public Result updateUser(
+            @ApiIgnore @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long userId,
+            @RequestBody UserUpdateRequestDto requestDto) {
+        if(userDetails.getId() != null && !Objects.equals(userDetails.getId(), userId)) throw new NotResourceOwnerException();
+        userService.updateUser(userId, requestDto);
+        return responseService.getSuccessResult();
     }
 
     @ApiImplicitParams({

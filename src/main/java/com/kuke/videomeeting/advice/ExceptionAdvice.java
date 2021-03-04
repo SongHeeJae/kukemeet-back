@@ -103,4 +103,10 @@ public class ExceptionAdvice {
         return responseService.getFailResult(-1012, "방 목록 조회에 실패하였습니다.");
     }
 
+    @ExceptionHandler(PasswordNotMatchException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result passwordNotMatchException() {
+        return responseService.getFailResult(-1013, "비밀번호가 일치하지 않습니다.");
+    }
+
 }

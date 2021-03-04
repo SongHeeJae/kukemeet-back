@@ -11,6 +11,13 @@ janus:
   admin:
     server: http://media.kukemeet.com/admin
 
+cookie:
+  secure:
+    false
+  domain:
+
+
+
 logging.level:
   org.hibernate.SQL: debug
 #  org.hibernate.type: trace

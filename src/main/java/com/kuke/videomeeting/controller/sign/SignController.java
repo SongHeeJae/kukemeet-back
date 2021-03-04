@@ -13,6 +13,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -29,6 +30,10 @@ public class SignController {
     private final ResponseService responseService;
     private final SignService signService;
     private final JwtTokenProvider jwtTokenProvider;
+
+    @Value("${cookie.domain}") private String cookieDomain;
+    @Value("${cookie.secure}") private boolean cookieSecure;
+
 
     @ApiOperation(value="회원가입", notes = "회원가입을 한다.")
     @PostMapping(value = "/sign/register")
@@ -79,10 +84,10 @@ public Result refreshToken(
     private Cookie createTokenCookie(String token, String name, int maxAge) {
         Cookie cookie = new Cookie(name, token);
         cookie.setMaxAge(maxAge);
-        cookie.setSecure(true);
+        cookie.setSecure(cookieSecure);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
-        cookie.setDomain("kukemeet.com");
+        if(cookieSecure) cookie.setDomain(cookieDomain);
         return cookie;
     }
 }

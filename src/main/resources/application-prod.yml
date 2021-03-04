@@ -10,6 +10,12 @@ logging.level:
   org.hibernate.SQL: info
 #  org.hibernate.type: trace
 
+cookie:
+  secure:
+    true
+  domain:
+    kukemeet.com
+
 janus:
   admin:
     server: https://media.kukemeet.com/admin

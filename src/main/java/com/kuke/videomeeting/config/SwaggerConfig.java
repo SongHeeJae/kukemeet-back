@@ -26,6 +26,6 @@ public class SwaggerConfig {
         return new ApiInfoBuilder().title("Video Meeting API documentation")
                 .description("화상 회의 어플리케이션 API 서버 문서입니다.")
                 .license("gmlwo308@gmail.com")
-                .licenseUrl("https://github.com/songheejae/videomeeting-back").version("1").build();
+                .licenseUrl("https://github.com/songheejae/kukemeet-back").version("1").build();
     }
 }
