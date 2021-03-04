@@ -17,6 +17,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -30,7 +31,7 @@ public class CustomUserDetailService implements UserDetailsService {
     @Cacheable(value = CacheKey.USER_DETAILS, key = "#userId", unless = "#result == null")
     public UserDetails loadUserByUsername(String userId) {
         User user = userRepository.findByIdWithRoles(Long.valueOf(userId)).orElseGet(
-                () -> User.createUser(null, null, null, null, null, null)
+                () -> User.createUser(null, null, null, null, null, Collections.emptyList())
         );
         return new CustomUserDetails(
                 user.getId(),

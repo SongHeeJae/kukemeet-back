@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -60,7 +61,7 @@ public class MessageService {
     @Transactional
     public void deleteMessageBySender(Long senderId, Long messageId) {
         Message message = messageRepository.findById(messageId).orElseThrow(MessageNotFoundException::new);
-        if(!message.getSender().getId().equals(senderId)) throw new NotResourceOwnerException();
+        if(!Objects.equals(senderId, message.getSender().getId())) throw new NotResourceOwnerException();
         if(message.getReceiverDeleteStatus().equals(DeleteStatus.Y)) {
             messageRepository.delete(message);
         } else {
@@ -72,7 +73,7 @@ public class MessageService {
     @Transactional
     public void deleteMessageByReceiver(Long receiverId, Long messageId) {
         Message message = messageRepository.findById(messageId).orElseThrow(MessageNotFoundException::new);
-        if(!message.getReceiver().getId().equals(receiverId)) throw new NotResourceOwnerException();
+        if(!Objects.equals(receiverId, message.getReceiver().getId())) throw new NotResourceOwnerException();
         if(message.getSenderDeleteStatus().equals(DeleteStatus.Y)) {
             messageRepository.delete(message);
         } else {

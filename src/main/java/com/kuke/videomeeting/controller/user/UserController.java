@@ -30,7 +30,6 @@ public class UserController {
         return responseService.getSingleResult(userService.readUser(userDetails.getId()));
     }
 
-
     @GetMapping("/users")
     public Result readAllUsers(UserSearchDto searchDto) {
         return responseService.getListResult(userService.readAllUsers(searchDto));
@@ -50,8 +49,10 @@ public class UserController {
             @ApiImplicitParam(name = "Authorization", value = "access-token", required = true, dataType = "String", paramType = "header")
     })
     @DeleteMapping("/users/{userId}")
-    public Result deleteUser(@PathVariable Long userId) {
-        userService.deleteUser(userId);
+    public Result deleteUser(
+            @ApiIgnore @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long userId) {
+        userService.deleteUser(userDetails.getId(), userId);
         return responseService.getSuccessResult();
     }
 

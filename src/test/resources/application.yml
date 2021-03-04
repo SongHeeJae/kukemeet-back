@@ -14,3 +14,10 @@ spring:
       hibernate:
         default_batch_fetch_size: 100
     open-in-view: false
+
+janus:
+  admin:
+    secret: test
+    server: test
+  room:
+    secret: test

@@ -51,7 +51,7 @@ class UserServiceTest {
                 "nickname", null, null)));
 
         // when
-        userService.deleteUser(1L);
+        userService.deleteUser(1L, 1L);
 
         // then
         verify(userRepository).delete(any());

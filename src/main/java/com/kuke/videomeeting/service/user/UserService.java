@@ -1,5 +1,6 @@
 package com.kuke.videomeeting.service.user;
 
+import com.kuke.videomeeting.advice.exception.NotResourceOwnerException;
 import com.kuke.videomeeting.advice.exception.UserNotFoundException;
 import com.kuke.videomeeting.cache.CacheHandler;
 import com.kuke.videomeeting.config.cache.CacheKey;
@@ -40,8 +41,9 @@ public class UserService {
             @CacheEvict(value = CacheKey.RECEIVED_MESSAGES, key ="#userId", allEntries = true)
     })
     @Transactional
-    public void deleteUser(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+    public void deleteUser(Long userId, Long targetId) {
+        if(!userId.equals(targetId)) throw new NotResourceOwnerException();
+        User user = userRepository.findById(targetId).orElseThrow(UserNotFoundException::new);
         userRepository.delete(user);
     }
 
