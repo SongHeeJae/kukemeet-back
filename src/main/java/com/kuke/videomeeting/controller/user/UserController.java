@@ -1,5 +1,6 @@
 package com.kuke.videomeeting.controller.user;
 
+import com.kuke.videomeeting.advice.exception.NotResourceOwnerException;
 import com.kuke.videomeeting.model.auth.CustomUserDetails;
 import com.kuke.videomeeting.model.dto.response.Result;
 import com.kuke.videomeeting.model.dto.user.UserSearchDto;
@@ -12,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
+
+import java.util.Objects;
 
 @Api(value = "User Controller", tags = {"User"})
 @RestController
@@ -52,7 +55,8 @@ public class UserController {
     public Result deleteUser(
             @ApiIgnore @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long userId) {
-        userService.deleteUser(userDetails.getId(), userId);
+        if(userDetails.getId() != null && !Objects.equals(userDetails.getId(), userId)) throw new NotResourceOwnerException();
+        userService.deleteUser(userId);
         return responseService.getSuccessResult();
     }
 

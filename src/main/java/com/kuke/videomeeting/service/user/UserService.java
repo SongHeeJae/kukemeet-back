@@ -41,9 +41,8 @@ public class UserService {
             @CacheEvict(value = CacheKey.RECEIVED_MESSAGES, key ="#userId", allEntries = true)
     })
     @Transactional
-    public void deleteUser(Long userId, Long targetId) {
-        if(!userId.equals(targetId)) throw new NotResourceOwnerException();
-        User user = userRepository.findById(targetId).orElseThrow(UserNotFoundException::new);
+    public void deleteUser(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         userRepository.delete(user);
     }
 

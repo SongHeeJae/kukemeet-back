@@ -1,6 +1,7 @@
 package com.kuke.videomeeting.controller.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kuke.videomeeting.model.auth.CustomUserDetails;
 import com.kuke.videomeeting.model.dto.user.UserRegisterRequestDto;
 import com.kuke.videomeeting.service.common.ResponseService;
 import com.kuke.videomeeting.service.user.UserService;
@@ -11,6 +12,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -19,6 +22,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -64,10 +68,10 @@ class UserControllerTest {
         Long userId = 1L;
 
         // when, then
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/users/{userId}", userId))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/users/{userId}",userId))
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
 
-        verify(userService).deleteUser(any(), anyLong());
+        verify(userService).deleteUser(anyLong());
     }
 
     @Test
