@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -62,7 +63,7 @@ public class FriendService {
     @Transactional
     public void deleteFriend(Long userId, Long friendId) {
         Friend friend = friendRepository.findById(friendId).orElseThrow(FriendNotFoundException::new);
-        if(friend.getFrom().getId() != userId) throw new NotResourceOwnerException();
+        if(!Objects.equals(friend.getFrom().getId(), userId)) throw new NotResourceOwnerException();
         friendRepository.delete(friend);
     }
 }
