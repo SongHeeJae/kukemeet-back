@@ -45,6 +45,9 @@ dependencies {
 
 	// mysql
 	implementation 'mysql:mysql-connector-java'
+
+	// validation
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 }
 
 test {
