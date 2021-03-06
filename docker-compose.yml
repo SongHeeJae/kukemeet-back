@@ -8,6 +8,9 @@ services:
       MYSQL_ROOT_HOST: '%'
     ports:
       - 3306:3306
+    volumes:
+    - /home/gmlwo308/docker/mysql/data:/var/lib/mysql
+    - - /home/gmlwo308/docker/mysql/config:/etc/mysql/conf.d
 
   redis:
     image: redis
@@ -19,6 +22,7 @@ services:
     volumes:
       - ../secret:/secret
       - /etc/localtime:/etc/localtime:ro
+    restart: on-failure
     environment:
       TZ: Asia/Seoul
     ports:
