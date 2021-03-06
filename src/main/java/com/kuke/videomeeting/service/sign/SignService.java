@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.Collections;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -60,7 +61,7 @@ public class SignService {
         if(!jwtTokenProvider.validateToken(token)) throw new AccessDeniedException("");
         String userId = jwtTokenProvider.getUserId(token);
         User user = userRepository.findById(Long.valueOf(userId)).orElseThrow(UserNotFoundException::new);
-        if(!user.getRefreshToken().equals(refreshToken)) throw new AccessDeniedException("");
+        if(!Objects.equals(user.getRefreshToken(), refreshToken)) throw new AccessDeniedException("");
         String newRefreshToken = createRefreshToken(userId);
         user.changeRefreshToken(newRefreshToken);
         return new UserLoginResponseDto(jwtTokenProvider.createToken(userId), newRefreshToken, UserDto.convertUserToDto(user));
