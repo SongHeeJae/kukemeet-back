@@ -10,7 +10,7 @@ services:
       - 3306:3306
     volumes:
     - /home/gmlwo308/docker/mysql/data:/var/lib/mysql
-    - - /home/gmlwo308/docker/mysql/config:/etc/mysql/conf.d
+    - /home/gmlwo308/docker/mysql/config:/etc/mysql/conf.d
 
   redis:
     image: redis
