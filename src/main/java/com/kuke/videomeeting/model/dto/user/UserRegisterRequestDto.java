@@ -20,9 +20,11 @@ public class UserRegisterRequestDto {
 
     @NotBlank(message = "이름을 입력해주세요.")
     @Size(min=2, message="올바른 이름을 입력해주세요.")
+    @Pattern(regexp = "^[A-Za-z가-힣]+$", message = "이름은 영문 또는 한글만 입력해주세요.")
     private String username;
 
     @NotBlank(message = "닉네임을 입력해주세요.")
     @Size(min=2, message="닉네임이 너무 짧습니다.")
+    @Pattern(regexp = "^[A-Za-z가-힣]+$", message = "닉네임은 영문 또는 한글만 입력해주세요.")
     private String nickname;
 }

@@ -151,6 +151,84 @@ class SignControllerTest {
     }
 
     @Test
+    public void registerExceptionBySpaceUsernameTest() throws Exception {
+        // given
+        UserRegisterRequestDto info = new UserRegisterRequestDto("uid@uid.com", "123456a!", "안 a", "nickname");
+        String content = objectMapper.writeValueAsString(info);
+
+        // when, then
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/sign/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+    }
+
+    @Test
+    public void registerExceptionBySpecialCharacterUsernameTest() throws Exception {
+        // given
+        UserRegisterRequestDto info = new UserRegisterRequestDto("uid@uid.com", "123456a!", "안!a", "nickname");
+        String content = objectMapper.writeValueAsString(info);
+
+        // when, then
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/sign/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+    }
+
+    @Test
+    public void registerExceptionBySpaceNicknameTest() throws Exception {
+        // given
+        UserRegisterRequestDto info = new UserRegisterRequestDto("uid@uid.com", "123456a!", "username", "안 a");
+        String content = objectMapper.writeValueAsString(info);
+
+        // when, then
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/sign/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+    }
+
+    @Test
+    public void registerExceptionBySpecialCharacterNicknameTest() throws Exception {
+        // given
+        UserRegisterRequestDto info = new UserRegisterRequestDto("uid@uid.com", "123456a!", "username", "안!a");
+        String content = objectMapper.writeValueAsString(info);
+
+        // when, then
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/sign/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+    }
+
+    @Test
+    public void registerExceptionByChoseongUsernameTest() throws Exception {
+        // given
+        UserRegisterRequestDto info = new UserRegisterRequestDto("uid@uid.com", "123456a!", "ㄱㄱㄱ", "nickname");
+        String content = objectMapper.writeValueAsString(info);
+
+        // when, then
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/sign/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+    }
+
+    @Test
+    public void registerExceptionByChoseongNicknameTest() throws Exception {
+        // given
+        UserRegisterRequestDto info = new UserRegisterRequestDto("uid@uid.com", "123456a!", "username", "ㄱㄱㄱ");
+        String content = objectMapper.writeValueAsString(info);
+
+        // when, then
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/sign/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+    }
+
+    @Test
     public void loginTest() throws Exception {
         // given
         UserLoginRequestDto info = new UserLoginRequestDto("uid@uid.com", "123456a!");
