@@ -153,7 +153,7 @@ class SignControllerTest {
     @Test
     public void loginTest() throws Exception {
         // given
-        UserLoginRequestDto info = new UserLoginRequestDto("uid", "1234");
+        UserLoginRequestDto info = new UserLoginRequestDto("uid@uid.com", "123456a!");
         String content = objectMapper.writeValueAsString(info);
 
         // when, then

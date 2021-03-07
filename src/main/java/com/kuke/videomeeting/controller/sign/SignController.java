@@ -47,7 +47,7 @@ public class SignController {
     @PostMapping(value = "/sign/login")
     public Result login(
              @ApiIgnore HttpServletResponse response,
-            @RequestBody UserLoginRequestDto requestDto) {
+            @Valid @RequestBody UserLoginRequestDto requestDto) {
         UserLoginResponseDto result = signService.login(requestDto);
         response.addCookie(createTokenCookie(result.getAccessToken(), "kuke-access-token", (int) jwtTokenProvider.getTokenValidMillisecond() / 1000));
         response.addCookie(createTokenCookie(result.getRefreshToken(), "kuke-refresh-token", (int) jwtTokenProvider.getRefreshTokenValidMillisecond() / 1000));
