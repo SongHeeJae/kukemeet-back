@@ -47,7 +47,7 @@ class SignControllerTest {
     @Test
     public void registerTest() throws Exception {
         // given
-        UserRegisterRequestDto info = new UserRegisterRequestDto("uid", "1234", "username", "nickname");
+        UserRegisterRequestDto info = new UserRegisterRequestDto("uid@uid.com", "123456a!", "username", "nickname");
         String content = objectMapper.writeValueAsString(info);
 
         // when, then
@@ -57,6 +57,97 @@ class SignControllerTest {
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
 
         verify(signService).register(info);
+    }
+
+    @Test
+    public void registerExceptionByShortNicknameTest() throws Exception {
+        // given
+        UserRegisterRequestDto info = new UserRegisterRequestDto("uid@uid.com", "123456a!", "username", "n");
+        String content = objectMapper.writeValueAsString(info);
+
+        // when, then
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/sign/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+    }
+
+    @Test
+    public void registerExceptionByInvalidationEmailTest() throws Exception {
+        // given
+        UserRegisterRequestDto info = new UserRegisterRequestDto("uid", "123456a!", "username", "nickname");
+        String content = objectMapper.writeValueAsString(info);
+
+        // when, then
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/sign/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+    }
+
+    @Test
+    public void registerExceptionByShortUsernameTest() throws Exception {
+        // given
+        UserRegisterRequestDto info = new UserRegisterRequestDto("uid@uid.com", "123456a!", "u", "nickname");
+        String content = objectMapper.writeValueAsString(info);
+
+        // when, then
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/sign/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+    }
+
+    @Test
+    public void registerExceptionByNotGreaterThanEightCharactersPasswordTest() throws Exception {
+        // given
+        UserRegisterRequestDto info = new UserRegisterRequestDto("uid@uid.com", "123a!!!", "username", "nickname");
+        String content = objectMapper.writeValueAsString(info);
+
+        // when, then
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/sign/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+    }
+
+    @Test
+    public void registerExceptionByNonCharacterPasswordTest() throws Exception {
+        // given
+        UserRegisterRequestDto info = new UserRegisterRequestDto("uid@uid.com", "123!!!123", "username", "nickname");
+        String content = objectMapper.writeValueAsString(info);
+
+        // when, then
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/sign/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+    }
+
+    @Test
+    public void registerExceptionByNonNumberPasswordTest() throws Exception {
+        // given
+        UserRegisterRequestDto info = new UserRegisterRequestDto("uid@uid.com", "!@#@$!aaad", "username", "nickname");
+        String content = objectMapper.writeValueAsString(info);
+
+        // when, then
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/sign/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+    }
+
+    @Test
+    public void registerExceptionByNonSpecialCharacterPasswordTest() throws Exception {
+        // given
+        UserRegisterRequestDto info = new UserRegisterRequestDto("uid@uid.com", "1234aaaab", "username", "nickname");
+        String content = objectMapper.writeValueAsString(info);
+
+        // when, then
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/sign/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
     }
 
     @Test

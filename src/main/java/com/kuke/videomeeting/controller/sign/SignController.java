@@ -20,6 +20,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 
 @Api(value = "Sign Controller", tags = {"Sign"})
@@ -37,7 +38,7 @@ public class SignController {
 
     @ApiOperation(value="회원가입", notes = "회원가입을 한다.")
     @PostMapping(value = "/sign/register")
-    public Result register(@RequestBody UserRegisterRequestDto requestDto) {
+    public Result register(@Valid @RequestBody UserRegisterRequestDto requestDto) {
         signService.register(requestDto);
         return responseService.getSuccessResult();
     }

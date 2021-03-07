@@ -6,6 +6,9 @@ import com.kuke.videomeeting.service.common.ResponseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -109,4 +112,9 @@ public class ExceptionAdvice {
         return responseService.getFailResult(-1013, "비밀번호가 일치하지 않습니다.");
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result methodArgumentNotValidException(MethodArgumentNotValidException e) {
+        return responseService.getFailResult(-1014, e.getBindingResult().getFieldError().getDefaultMessage());
+    }
 }
