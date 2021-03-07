@@ -70,7 +70,7 @@ class MessageControllerTest {
         // given
         MessageCreateRequestDto requestDto = new MessageCreateRequestDto("msg", 1L);
         String content = objectMapper.writeValueAsString(requestDto);
-        System.out.println("content = " + content);
+
         // when, then
         mockMvc.perform(MockMvcRequestBuilders.post("/api/messages")
                 .contentType(MediaType.APPLICATION_JSON)
