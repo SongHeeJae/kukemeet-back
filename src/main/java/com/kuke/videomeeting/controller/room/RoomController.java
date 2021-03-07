@@ -13,6 +13,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.validation.Valid;
+
 @Api(value = "Room Controller", tags = {"Room"})
 @RestController
 @RequestMapping("/api")
@@ -42,7 +44,7 @@ public class RoomController {
             @ApiImplicitParam(name = "Authorization", value = "access-token", required = true, dataType = "String", paramType = "header")
     })
     @PostMapping("/rooms")
-    public Result createRoom(@RequestBody RoomCreateRequestDto requestDto) {
+    public Result createRoom(@Valid @RequestBody RoomCreateRequestDto requestDto) {
         return responseService.getSingleResult(roomService.createRoom(requestDto));
     }
 }

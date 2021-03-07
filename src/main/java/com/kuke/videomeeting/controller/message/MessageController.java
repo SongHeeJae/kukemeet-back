@@ -18,6 +18,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Api(value = "Message Controller", tags = {"Message"})
@@ -58,7 +59,7 @@ public class MessageController {
     @PostMapping("/messages")
     public Result createMessage(
             @ApiIgnore @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestBody MessageCreateRequestDto requestDto) {
+            @Valid @RequestBody MessageCreateRequestDto requestDto) {
         return responseService.getSingleResult(messageService.createMessage(userDetails.getId(), requestDto));
     }
 

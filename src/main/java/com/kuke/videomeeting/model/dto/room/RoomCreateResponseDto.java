@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class RoomCreateResponseDto {
-    String videoroom;
-    String room;
-    String permanent;
+    private String videoroom;
+    private String room;
+    private String permanent;
 }

@@ -5,10 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotEmpty;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class RoomCreateRequestDto {
-    String title;
-    String pin;
+    @NotEmpty
+    private String title;
+
+    @NotEmpty
+    private String pin;
 }

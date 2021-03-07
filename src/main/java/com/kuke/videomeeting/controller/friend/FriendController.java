@@ -14,6 +14,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.validation.Valid;
+
 @Api(value = "Friend Controller", tags = {"Friend"})
 @RestController
 @RequestMapping("/api")
@@ -37,7 +39,7 @@ public class FriendController {
     @PostMapping("/friends")
     public Result createFriend(
             @ApiIgnore @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestBody FriendCreateRequestDto requestDto) {
+            @Valid @RequestBody FriendCreateRequestDto requestDto) {
         return responseService.getSingleResult(friendService.createFriend(userDetails.getId(), requestDto));
     }
 
