@@ -1,6 +1,5 @@
 package com.kuke.videomeeting.config.security;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
@@ -13,8 +12,8 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        response.sendRedirect(request.getScheme().equals("https")
-                ? "https://api.kukemeet.com/exception/entrypoint" : "/exception/entrypoint");
+        response.sendRedirect(request.getServerName().equals("localhost")
+                ? "/exception/entrypoint" : "https://api.kukemeet.com/exception/entrypoint");
     }
 
 }
