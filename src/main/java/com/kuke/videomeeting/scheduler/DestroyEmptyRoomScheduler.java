@@ -1,6 +1,7 @@
 package com.kuke.videomeeting.scheduler;
 
 import com.kuke.videomeeting.model.dto.room.RoomDto;
+import com.kuke.videomeeting.service.file.FileService;
 import com.kuke.videomeeting.service.room.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DestroyEmptyRoomScheduler {
     private final RoomService roomService;
+    private final FileService fileService;
     private final Set<String> prevEmptyRooms = new HashSet<>(); // 이전 검사에서 비어있다고 나온 방들
 
     @Scheduled(fixedDelay = 1000L * 60)
@@ -44,6 +46,7 @@ public class DestroyEmptyRoomScheduler {
     private void destroyRooms(Set<String> emptyRooms, List<String> destroyRooms) throws Exception{
         destroyRooms.stream().forEach(i -> {
             roomService.destroyRoom(i);
+            fileService.deleteFilesInDirectory(i);
             emptyRooms.remove(i); // 이미 제거한 빈방
         });
     }

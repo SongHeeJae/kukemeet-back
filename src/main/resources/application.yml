@@ -3,3 +3,18 @@ spring:
     active: local
     include:
       - secret
+  servlet:
+    multipart:
+      max-file-size: 300MB
+      max-request-size: 300MB
+
+cloud:
+  aws:
+    s3:
+      bucket: kukemeet
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+    credentials:
+      instanceProfile: true

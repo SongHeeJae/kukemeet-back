@@ -117,4 +117,10 @@ public class ExceptionAdvice {
     public Result methodArgumentNotValidException(MethodArgumentNotValidException e) {
         return responseService.getFailResult(-1014, e.getBindingResult().getFieldError().getDefaultMessage());
     }
+
+    @ExceptionHandler(FileUploadFailureException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result fileUploadFailureException() {
+        return responseService.getFailResult(-1015, "파일 업로드를 실패하였습니다.");
+    }
 }
