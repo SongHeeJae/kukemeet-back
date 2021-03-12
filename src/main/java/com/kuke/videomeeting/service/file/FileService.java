@@ -15,7 +15,7 @@ public interface FileService {
     void deleteFilesInDirectory(String path);
 
     default File convertMultipartFileToFile(MultipartFile mFile, String tempPath) throws IOException {
-        File file = new File("src/main/resources/" + tempPath);
+        File file = new File(tempPath);
         if (file.createNewFile()) {
             try (FileOutputStream fos = new FileOutputStream(file)) {
                 fos.write(mFile.getBytes());
