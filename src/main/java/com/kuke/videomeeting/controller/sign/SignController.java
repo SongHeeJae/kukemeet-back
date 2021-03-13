@@ -3,6 +3,7 @@ package com.kuke.videomeeting.controller.sign;
 import com.kuke.videomeeting.config.security.JwtTokenProvider;
 import com.kuke.videomeeting.model.auth.CustomUserDetails;
 import com.kuke.videomeeting.model.dto.response.Result;
+import com.kuke.videomeeting.model.dto.user.UserChangePasswordRequestDto;
 import com.kuke.videomeeting.model.dto.user.UserLoginRequestDto;
 import com.kuke.videomeeting.model.dto.user.UserLoginResponseDto;
 import com.kuke.videomeeting.model.dto.user.UserRegisterRequestDto;
@@ -81,6 +82,19 @@ public Result refreshToken(
         response.addCookie(createTokenCookie("", "kuke-refresh-token", 0));
         return responseService.getSuccessResult();
     }
+
+    @ApiOperation(value="비밀번호 변경", notes = "비밀번호를 변경한다.")
+    @PutMapping(value = "/sign/change-password")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "access-token", required = true, dataType = "String", paramType = "header")
+    })
+    public Result changePassword(
+            @ApiIgnore @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Valid @RequestBody UserChangePasswordRequestDto requestDto) {
+        signService.changePassword(userDetails.getId(), requestDto);
+        return responseService.getSuccessResult();
+    }
+
 
     private Cookie createTokenCookie(String token, String name, int maxAge) {
         Cookie cookie = new Cookie(name, token);

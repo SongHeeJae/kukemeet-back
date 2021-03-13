@@ -38,6 +38,7 @@ public class S3FileService implements FileService {
             TransferManager transferManager = TransferManagerBuilder
                     .standard()
                     .withS3Client(amazonS3)
+                    .withMultipartUploadThreshold(300L * 1024 * 1024)
                     .build();
             Upload upload = transferManager.upload(bucket, key, convertedFile);
             upload.waitForUploadResult();

@@ -32,7 +32,6 @@ class UserServiceTest {
 
     @Mock private UserRepository userRepository;
     @Mock private CacheHandler cacheHandler;
-    @Mock private PasswordEncoder passwordEncoder;
     @InjectMocks private UserService userService;
 
     @Test
@@ -97,19 +96,16 @@ class UserServiceTest {
         // given
         String current = "current";
         String next = "next";
-        User user = User.createUser("uid", current, current, current, null, null);
+        User user = User.createUser("uid", "password", current, current, null, null);
         given(userRepository.findById(anyLong()))
                 .willReturn(Optional.ofNullable(user));
-        given(passwordEncoder.encode(anyString())).willReturn(next);
-        given(passwordEncoder.matches(anyString(), anyString())).willReturn(true);
 
         // when
-        userService.updateUser(1L, new UserUpdateRequestDto(next, next, current, next));
+        userService.updateUser(1L, new UserUpdateRequestDto(next, next));
 
         // then
         assertThat(user.getNickname()).isEqualTo(next);
         assertThat(user.getUsername()).isEqualTo(next);
-        assertThat(user.getPassword()).isEqualTo(next);
     }
 
     @Test
@@ -127,24 +123,11 @@ class UserServiceTest {
                 .willReturn(Optional.ofNullable(user2));
 
         // when, then
-        assertThatThrownBy(() -> userService.updateUser(1L, new UserUpdateRequestDto(null, nextNickname, null, null)))
+        assertThatThrownBy(() -> userService.updateUser(1L, new UserUpdateRequestDto(null, nextNickname)))
                 .isInstanceOf(UserNicknameAlreadyExistsException.class);
     }
 
-    @Test
-    public void updateUserExceptionByNotMatchPasswordTest() {
-        // given
-        String current = "current";
-        String next = "next";
-        User user = User.createUser("uid", current, current, current, null, null);
-        given(userRepository.findById(anyLong()))
-                .willReturn(Optional.ofNullable(user));
-        given(passwordEncoder.matches(anyString(), anyString())).willReturn(false);
 
-        // when, then
-        assertThatThrownBy(() -> userService.updateUser(1L, new UserUpdateRequestDto(next, next, current, next)))
-                .isInstanceOf(PasswordNotMatchException.class);
-    }
 
 
 

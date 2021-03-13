@@ -2,6 +2,7 @@ package com.kuke.videomeeting.config.security;
 
 import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,6 +23,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtTokenProvider jwtTokenProvider;
+
+    @Value("${cors.allowedOrigin}")
+    private String allowedOrigin;
 
     @Override
     public void configure(WebSecurity web) throws Exception {
@@ -58,7 +62,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         final CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000", "https://kukemeet.com"));
+        configuration.setAllowedOrigins(List.of(allowedOrigin));
 
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");

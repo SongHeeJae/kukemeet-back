@@ -36,7 +36,6 @@ public class UserService {
 
     private final CacheHandler cacheHandler;
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
     @Caching(evict = {
             @CacheEvict(value = CacheKey.USER, key="#userId"),
@@ -83,7 +82,6 @@ public class UserService {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         updateNickname(user, requestDto.getNickname());
         updateUsername(user, requestDto.getUsername());
-        updatePassword(user, requestDto.getCurrentPassword(), requestDto.getNextPassword());
     }
 
     private void updateNickname(User user, String nickname) {
@@ -95,12 +93,5 @@ public class UserService {
     private void updateUsername(User user, String username) {
         if(username == null) return;
         user.changeUsername(username);
-    }
-
-    private void updatePassword(User user, String currentPassword, String nextPassword) {
-        if(currentPassword == null || nextPassword == null || user.getPassword() == null) return;
-        if(!passwordEncoder.matches(currentPassword, user.getPassword()))
-            throw new PasswordNotMatchException();
-        user.changePassword(passwordEncoder.encode(nextPassword));
     }
 }

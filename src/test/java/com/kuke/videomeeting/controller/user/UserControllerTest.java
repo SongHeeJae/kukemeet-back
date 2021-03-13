@@ -88,7 +88,7 @@ class UserControllerTest {
     public void updateUserTest() throws Exception {
         // given
         Long userId = 1L;
-        UserUpdateRequestDto info = new UserUpdateRequestDto("uid", "nickname", "currentPassword", "nextPassword");
+        UserUpdateRequestDto info = new UserUpdateRequestDto("username", "nickname");
         String content = objectMapper.writeValueAsString(info);
 
         // when, then

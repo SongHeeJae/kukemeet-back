@@ -16,6 +16,9 @@ cookie:
     false
   domain:
 
+cors:
+  allowedOrigin:
+    http://localhost:3000
 
 
 logging.level:

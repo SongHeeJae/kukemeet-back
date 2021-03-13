@@ -1,16 +1,10 @@
 package com.kuke.videomeeting.service.sign;
 
-import com.kuke.videomeeting.advice.exception.LoginFailureException;
-import com.kuke.videomeeting.advice.exception.UserNicknameAlreadyExistsException;
-import com.kuke.videomeeting.advice.exception.UserNotFoundException;
-import com.kuke.videomeeting.advice.exception.UserUidAlreadyExistsException;
+import com.kuke.videomeeting.advice.exception.*;
 import com.kuke.videomeeting.config.security.JwtTokenProvider;
 import com.kuke.videomeeting.domain.Role;
 import com.kuke.videomeeting.domain.User;
-import com.kuke.videomeeting.model.dto.user.UserDto;
-import com.kuke.videomeeting.model.dto.user.UserLoginRequestDto;
-import com.kuke.videomeeting.model.dto.user.UserLoginResponseDto;
-import com.kuke.videomeeting.model.dto.user.UserRegisterRequestDto;
+import com.kuke.videomeeting.model.dto.user.*;
 import com.kuke.videomeeting.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -73,6 +67,18 @@ public class SignService {
         user.changeRefreshToken("");
     }
 
+    @Transactional
+    public void changePassword(Long userId, UserChangePasswordRequestDto requestDto) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        updatePassword(user, requestDto.getCurrentPassword(), requestDto.getNextPassword());
+    }
+
+    private void updatePassword(User user, String currentPassword, String nextPassword) {
+        if(currentPassword == null || nextPassword == null || user.getPassword() == null) return;
+        if(!passwordEncoder.matches(currentPassword, user.getPassword()))
+            throw new PasswordNotMatchException();
+        user.changePassword(passwordEncoder.encode(nextPassword));
+    }
 
 
     private void validateDuplicateUserByUid(String uid) {

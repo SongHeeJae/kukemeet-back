@@ -15,6 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.validation.Valid;
 import java.util.Objects;
 
 @Api(value = "User Controller", tags = {"User"})
@@ -56,7 +57,7 @@ public class UserController {
     public Result updateUser(
             @ApiIgnore @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long userId,
-            @RequestBody UserUpdateRequestDto requestDto) {
+            @Valid @RequestBody UserUpdateRequestDto requestDto) {
         if(userDetails.getId() != null && !Objects.equals(userDetails.getId(), userId)) throw new NotResourceOwnerException();
         userService.updateUser(userId, requestDto);
         return responseService.getSuccessResult();

@@ -1,14 +1,13 @@
 package com.kuke.videomeeting.service.sign;
 
+import com.kuke.videomeeting.advice.exception.PasswordNotMatchException;
 import com.kuke.videomeeting.advice.exception.UserNicknameAlreadyExistsException;
 import com.kuke.videomeeting.advice.exception.UserNotFoundException;
 import com.kuke.videomeeting.advice.exception.UserUidAlreadyExistsException;
 import com.kuke.videomeeting.config.security.JwtTokenProvider;
 import com.kuke.videomeeting.domain.Role;
 import com.kuke.videomeeting.domain.User;
-import com.kuke.videomeeting.model.dto.user.UserLoginRequestDto;
-import com.kuke.videomeeting.model.dto.user.UserLoginResponseDto;
-import com.kuke.videomeeting.model.dto.user.UserRegisterRequestDto;
+import com.kuke.videomeeting.model.dto.user.*;
 import com.kuke.videomeeting.repository.user.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -152,6 +151,39 @@ class SignServiceTest {
         // then
         assertThat(user.getRefreshToken()).isEqualTo("");
 
+    }
+
+    @Test
+    public void changePasswordTest() {
+        // given
+        String current = "current";
+        String next = "next";
+        User user = User.createUser("uid", current, "username", "nickname", null, null);
+        given(userRepository.findById(anyLong()))
+                .willReturn(Optional.ofNullable(user));
+        given(passwordEncoder.matches(anyString(), anyString())).willReturn(true);
+        given(passwordEncoder.encode(anyString())).willReturn(next);
+
+        // when
+        signService.changePassword(1L, new UserChangePasswordRequestDto(current, next));
+
+        // then
+        assertThat(user.getPassword()).isEqualTo(next);
+    }
+
+    @Test
+    public void changePasswordExceptionByNotMatchPasswordTest() {
+        // given
+        String current = "current";
+        String next = "next";
+        User user = User.createUser("uid", current, "username", "nickname", null, null);
+        given(userRepository.findById(anyLong()))
+                .willReturn(Optional.ofNullable(user));
+        given(passwordEncoder.matches(anyString(), anyString())).willReturn(false);
+
+        // when, then
+        assertThatThrownBy(() -> signService.changePassword(1L, new UserChangePasswordRequestDto(current, next)))
+                .isInstanceOf(PasswordNotMatchException.class);
     }
 
 

@@ -3,6 +3,7 @@ package com.kuke.videomeeting.controller.sign;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuke.videomeeting.config.security.JwtAuthenticationFilter;
 import com.kuke.videomeeting.config.security.JwtTokenProvider;
+import com.kuke.videomeeting.model.dto.user.UserChangePasswordRequestDto;
 import com.kuke.videomeeting.model.dto.user.UserLoginRequestDto;
 import com.kuke.videomeeting.model.dto.user.UserRegisterRequestDto;
 import com.kuke.videomeeting.service.common.ResponseService;
@@ -240,10 +241,27 @@ class SignControllerTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(content))
                     .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
-        } catch (NestedServletException e) { }
+        } catch (NestedServletException e) {
+            // empty
+        }
 
 
         verify(signService).login(info);
+    }
+
+    @Test
+    public void changePasswordTest() throws Exception {
+        // given
+        UserChangePasswordRequestDto info = new UserChangePasswordRequestDto("123456a!", "123456b!");
+        String content = objectMapper.writeValueAsString(info);
+
+        // when, then
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/sign/change-password")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
+
+        verify(signService).changePassword(any(), any());
     }
 
     @Test
@@ -256,7 +274,9 @@ class SignControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/api/sign/refresh-token")
                 .header("Authorization", refreshToken))
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
-        } catch (NestedServletException e) { }
+        } catch (NestedServletException e) {
+            // empty
+        }
         verify(signService).refreshToken(refreshToken);
     }
 

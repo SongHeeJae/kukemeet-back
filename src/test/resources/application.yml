@@ -18,6 +18,10 @@ spring:
     secret:
       test
 
+cors:
+  allowedOrigin:
+    http://localhost:3000
+
 janus:
   admin:
     secret: test
@@ -29,3 +33,18 @@ cookie:
   secure:
     false
   domain:
+
+cloud:
+  aws:
+    s3:
+      bucket:
+      baseUrl:
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+    credentials:
+      accessKey:
+      secretKey:
+      instance-profile: false
+
