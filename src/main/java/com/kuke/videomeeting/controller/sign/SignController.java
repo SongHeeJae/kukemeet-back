@@ -3,11 +3,9 @@ package com.kuke.videomeeting.controller.sign;
 import com.kuke.videomeeting.config.security.JwtTokenProvider;
 import com.kuke.videomeeting.model.auth.CustomUserDetails;
 import com.kuke.videomeeting.model.dto.response.Result;
-import com.kuke.videomeeting.model.dto.user.UserChangePasswordRequestDto;
-import com.kuke.videomeeting.model.dto.user.UserLoginRequestDto;
-import com.kuke.videomeeting.model.dto.user.UserLoginResponseDto;
-import com.kuke.videomeeting.model.dto.user.UserRegisterRequestDto;
+import com.kuke.videomeeting.model.dto.user.*;
 import com.kuke.videomeeting.service.common.ResponseService;
+import com.kuke.videomeeting.service.mail.MailService;
 import com.kuke.videomeeting.service.sign.SignService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -22,6 +20,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import javax.validation.constraints.Email;
 
 
 @Api(value = "Sign Controller", tags = {"Sign"})
@@ -32,10 +31,10 @@ public class SignController {
     private final ResponseService responseService;
     private final SignService signService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final MailService mailService;
 
     @Value("${cookie.domain}") private String cookieDomain;
     @Value("${cookie.secure}") private boolean cookieSecure;
-
 
     @ApiOperation(value="회원가입", notes = "회원가입을 한다.")
     @PostMapping(value = "/sign/register")
@@ -94,6 +93,22 @@ public Result refreshToken(
         signService.changePassword(userDetails.getId(), requestDto);
         return responseService.getSuccessResult();
     }
+
+    @ApiOperation(value="비밀번호 분실 이메일 전송", notes = "비밀번호 분실자에게 이메일을 전송한다.")
+    @PostMapping(value = "/sign/send-code-email-for-forgotten-password")
+    public Result sendCodeEmailForForgottenPassword(@Valid @RequestBody UserSendEmailRequestDto requestDto) {
+        mailService.sendCodeEmailForForgottenPassword(requestDto);
+        return responseService.getSuccessResult();
+    }
+
+    @ApiOperation(value="분실한 비밀번호 변경", notes = "분실한 비밀번호를 변경한다.")
+    @PutMapping(value = "/sign/change-forgotten-password")
+    public Result changeForgottenPassword(@Valid @RequestBody UserChangeForgottenPasswordRequestDto requestDto) {
+        signService.changeForgottenPassword(requestDto);
+        return responseService.getSuccessResult();
+    }
+
+
 
 
     private Cookie createTokenCookie(String token, String name, int maxAge) {

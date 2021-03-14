@@ -3,10 +3,9 @@ package com.kuke.videomeeting.controller.sign;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuke.videomeeting.config.security.JwtAuthenticationFilter;
 import com.kuke.videomeeting.config.security.JwtTokenProvider;
-import com.kuke.videomeeting.model.dto.user.UserChangePasswordRequestDto;
-import com.kuke.videomeeting.model.dto.user.UserLoginRequestDto;
-import com.kuke.videomeeting.model.dto.user.UserRegisterRequestDto;
+import com.kuke.videomeeting.model.dto.user.*;
 import com.kuke.videomeeting.service.common.ResponseService;
+import com.kuke.videomeeting.service.mail.MailService;
 import com.kuke.videomeeting.service.sign.SignService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,6 +35,7 @@ import static org.mockito.Mockito.verify;
 class SignControllerTest {
     @Mock private ResponseService responseService;
     @Mock private SignService signService;
+    @Mock private MailService mailService;
     @InjectMocks private SignController signController;
     private MockMvc mockMvc;
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -280,4 +280,33 @@ class SignControllerTest {
         verify(signService).refreshToken(refreshToken);
     }
 
+    @Test
+    public void sendCodeEmailForForgottenPasswordTest() throws Exception {
+        // given
+        UserSendEmailRequestDto info = new UserSendEmailRequestDto("test@test.com");
+        String content = objectMapper.writeValueAsString(info);
+
+        // when, then
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/sign/send-code-email-for-forgotten-password")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
+
+        verify(mailService).sendCodeEmailForForgottenPassword(info);
+    }
+
+    @Test
+    public void changeForgottenPasswordTest() throws Exception {
+        // given
+        UserChangeForgottenPasswordRequestDto info = new UserChangeForgottenPasswordRequestDto("test@test.com", "code", "test123a!");
+        String content = objectMapper.writeValueAsString(info);
+
+        // when, then
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/sign/change-forgotten-password")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
+
+        verify(signService).changeForgottenPassword(info);
+    }
 }

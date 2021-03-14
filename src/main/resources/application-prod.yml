@@ -16,9 +16,8 @@ cookie:
   domain:
     kukemeet.com
 
-cors:
-  allowedOrigin:
-    https://kukemeet.com
+domain:
+  https://kukemeet.com
 
 janus:
   admin:

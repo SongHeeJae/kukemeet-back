@@ -70,16 +70,18 @@ public class SignService {
     @Transactional
     public void changePassword(Long userId, UserChangePasswordRequestDto requestDto) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        updatePassword(user, requestDto.getCurrentPassword(), requestDto.getNextPassword());
-    }
-
-    private void updatePassword(User user, String currentPassword, String nextPassword) {
-        if(currentPassword == null || nextPassword == null || user.getPassword() == null) return;
-        if(!passwordEncoder.matches(currentPassword, user.getPassword()))
+        if(!passwordEncoder.matches(requestDto.getCurrentPassword(), user.getPassword()))
             throw new PasswordNotMatchException();
-        user.changePassword(passwordEncoder.encode(nextPassword));
+        user.changePassword(passwordEncoder.encode(requestDto.getNextPassword()));
     }
 
+    @Transactional
+    public void changeForgottenPassword(UserChangeForgottenPasswordRequestDto requestDto) {
+        User user = userRepository.findByUid(requestDto.getUid()).orElseThrow(UserNotFoundException::new);
+        if (!Objects.equals(user.getCode(), requestDto.getCode())) throw new UserCodeNotMatchException();
+        user.changeCode("");
+        user.changePassword(passwordEncoder.encode(requestDto.getNextPassword()));
+    }
 
     private void validateDuplicateUserByUid(String uid) {
         if(userRepository.findByUid(uid).isPresent()) throw new UserUidAlreadyExistsException();
@@ -97,5 +99,6 @@ public class SignService {
     private String createRefreshToken(String userId) {
         return jwtTokenProvider.createRefreshToken(userId);
     }
+
 
 }

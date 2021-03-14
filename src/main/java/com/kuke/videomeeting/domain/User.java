@@ -35,6 +35,8 @@ public class User extends CommonEntityDate{
 
     private String refreshToken;
 
+    private String code; // 인증번호
+
     @ElementCollection(fetch = FetchType.LAZY)
     @Enumerated(EnumType.STRING)
     private List<Role> roles = new ArrayList<>();
@@ -76,6 +78,10 @@ public class User extends CommonEntityDate{
 
     public void changePassword(String password) {
         this.password = password;
+    }
+
+    public void changeCode(String code) {
+        this.code = code;
     }
 
 

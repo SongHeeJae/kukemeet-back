@@ -1,9 +1,6 @@
 package com.kuke.videomeeting.service.sign;
 
-import com.kuke.videomeeting.advice.exception.PasswordNotMatchException;
-import com.kuke.videomeeting.advice.exception.UserNicknameAlreadyExistsException;
-import com.kuke.videomeeting.advice.exception.UserNotFoundException;
-import com.kuke.videomeeting.advice.exception.UserUidAlreadyExistsException;
+import com.kuke.videomeeting.advice.exception.*;
 import com.kuke.videomeeting.config.security.JwtTokenProvider;
 import com.kuke.videomeeting.domain.Role;
 import com.kuke.videomeeting.domain.User;
@@ -184,6 +181,41 @@ class SignServiceTest {
         // when, then
         assertThatThrownBy(() -> signService.changePassword(1L, new UserChangePasswordRequestDto(current, next)))
                 .isInstanceOf(PasswordNotMatchException.class);
+    }
+
+    @Test
+    public void changeForgottenPasswordTest() {
+        // given
+        String nextPassword = "nextPassword";
+        String code = "code";
+        User user = User.createUser("uid", "password", "username", "nickname", null, null);
+        user.changeCode(code);
+        given(userRepository.findByUid(anyString()))
+                .willReturn(Optional.ofNullable(user));
+        given(passwordEncoder.encode(anyString())).willReturn(nextPassword);
+
+        // when
+        signService.changeForgottenPassword(new UserChangeForgottenPasswordRequestDto("uid", code, nextPassword));
+
+        // then
+        assertThat(user.getPassword()).isEqualTo(nextPassword);
+    }
+
+    @Test
+    public void changeForgottenPasswordExceptionByNotMatchCodeTest() {
+        // given
+        String nextPassword = "nextPassword";
+        String code = "code";
+        String notMatchCode =  "notMatchCode";
+        User user = User.createUser("uid", "password", "username", "nickname", null, null);
+        user.changeCode(code);
+        given(userRepository.findByUid(anyString()))
+                .willReturn(Optional.ofNullable(user));
+
+        // when, then
+        assertThatThrownBy(() -> {
+            signService.changeForgottenPassword(new UserChangeForgottenPasswordRequestDto("uid", notMatchCode, nextPassword));
+        }).isInstanceOf(UserCodeNotMatchException.class);
     }
 
 

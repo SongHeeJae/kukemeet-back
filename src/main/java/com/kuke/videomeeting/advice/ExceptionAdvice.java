@@ -123,4 +123,17 @@ public class ExceptionAdvice {
     public Result fileUploadFailureException() {
         return responseService.getFailResult(-1015, "파일 업로드를 실패하였습니다.");
     }
+
+    @ExceptionHandler(SendMailFailureException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result sendMailFailureException() {
+        return responseService.getFailResult(-1016, "메일 전송에 실패하였습니다.");
+    }
+
+    @ExceptionHandler(UserCodeNotMatchException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result userCodeNotMatchException() {
+        return responseService.getFailResult(-1017, "사용자 코드가 일치하지않습니다.");
+    }
+
 }

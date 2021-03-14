@@ -17,10 +17,21 @@ spring:
   jwt:
     secret:
       test
+  mail:
+    host:
+    port:
+    username:
+    password:
+    properties:
+      mail:
+        smtp:
+          auth:
+          starttls:
+            enable:
 
-cors:
-  allowedOrigin:
-    http://localhost:3000
+domain:
+  http://localhost:3000
+
 
 janus:
   admin:

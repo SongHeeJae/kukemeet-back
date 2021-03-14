@@ -16,10 +16,8 @@ cookie:
     false
   domain:
 
-cors:
-  allowedOrigin:
-    http://localhost:3000
-
+domain:
+  http://localhost:3000
 
 logging.level:
   org.hibernate.SQL: debug
