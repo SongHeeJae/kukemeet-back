@@ -11,15 +11,11 @@ services:
     volumes:
     - /home/gmlwo308/docker/mysql/data:/var/lib/mysql
     - /home/gmlwo308/docker/mysql/config:/etc/mysql/conf.d
-    networks:
-      - kukemeet
 
   redis:
     image: redis
     ports:
       - 6379:6379
-    networks:
-      - kukemeet
 
 networks:
   default:
