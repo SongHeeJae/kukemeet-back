@@ -1,0 +1,27 @@
+version: "3"
+services:
+  mysql:
+    image: mysql
+    environment:
+      MYSQL_DATABASE: kukemeet
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_HOST: '%'
+    ports:
+      - 3306:3306
+    volumes:
+    - /home/gmlwo308/docker/mysql/data:/var/lib/mysql
+    - /home/gmlwo308/docker/mysql/config:/etc/mysql/conf.d
+    networks:
+      - kukemeet
+
+  redis:
+    image: redis
+    ports:
+      - 6379:6379
+    networks:
+      - kukemeet
+
+networks:
+  default:
+    external:
+      name: kukemeet
