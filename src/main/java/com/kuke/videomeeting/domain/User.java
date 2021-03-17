@@ -37,6 +37,8 @@ public class User extends CommonEntityDate{
 
     private String code; // 인증번호
 
+    private long failureCount = 0;
+
     @ElementCollection(fetch = FetchType.LAZY)
     @Enumerated(EnumType.STRING)
     private List<Role> roles = new ArrayList<>();
@@ -82,6 +84,14 @@ public class User extends CommonEntityDate{
 
     public void changeCode(String code) {
         this.code = code;
+    }
+
+    public void increaseFailureCount() {
+        this.failureCount++;
+    }
+
+    public void resetFailureCount() {
+        this.failureCount = 0;
     }
 
 

@@ -6,8 +6,6 @@ import com.kuke.videomeeting.service.common.ResponseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -61,7 +59,7 @@ public class ExceptionAdvice {
     @ExceptionHandler(LoginFailureException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result loginFailureException() {
-        return responseService.getFailResult(-1006, "로그인에 실패하였습니다.");
+        return responseService.getFailResult(-1006, "로그인에 실패하였습니다. 5회 이상 로그인에 실패 할 시, 계정은 잠금 처리됩니다.");
     }
 
     @ExceptionHandler(MessageNotFoundException.class)
@@ -134,6 +132,12 @@ public class ExceptionAdvice {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result userCodeNotMatchException() {
         return responseService.getFailResult(-1017, "사용자 코드가 일치하지않습니다.");
+    }
+
+    @ExceptionHandler(LockedAccountException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result lockedAccountException() {
+        return responseService.getFailResult(-1018, "계정이 잠겼습니다. 비밀번호 분실 기능을 이용해서 비밀번호를 변경해주세요.");
     }
 
 }

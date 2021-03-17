@@ -10,9 +10,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import java.util.Collections;
 import java.util.Objects;
 
@@ -23,6 +27,7 @@ public class SignService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final EntityManager entityManager;
 
     @Transactional
     public void register(UserRegisterRequestDto requestDto) {
@@ -40,15 +45,19 @@ public class SignService {
     }
 
     @Transactional
-    public UserLoginResponseDto login(UserLoginRequestDto requestDto) {
+    public UserLoginResponseDto login(UserLoginRequestDto requestDto){
         User user = userRepository.findByUid(requestDto.getUid()).orElseThrow(LoginFailureException::new);
-        if(!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) throw new LoginFailureException();
-        String userId = String.valueOf(user.getId());
-        String refreshToken = createRefreshToken(userId);
-        user.changeRefreshToken(refreshToken);
-        return new UserLoginResponseDto(jwtTokenProvider.createToken(userId), refreshToken, UserDto.convertUserToDto(user));
+        if(user.getFailureCount() >= 5) throw new LockedAccountException();
+        if(!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+            user.increaseFailureCount();
+            entityManager.createNativeQuery("commit").executeUpdate();
+            throw new LoginFailureException();
+        }
+        user.changeRefreshToken(createRefreshToken(user.getId()));
+        user.resetFailureCount();
+        return new UserLoginResponseDto(createToken(user.getId()), user.getRefreshToken(), UserDto.convertUserToDto(user));
     }
-
+    
     @Transactional
     public UserLoginResponseDto refreshToken(String refreshToken) {
         String token = jwtTokenProvider.removeType(refreshToken);
@@ -56,15 +65,14 @@ public class SignService {
         String userId = jwtTokenProvider.getUserId(token);
         User user = userRepository.findById(Long.valueOf(userId)).orElseThrow(UserNotFoundException::new);
         if(!Objects.equals(user.getRefreshToken(), refreshToken)) throw new AccessDeniedException("");
-        String newRefreshToken = createRefreshToken(userId);
-        user.changeRefreshToken(newRefreshToken);
-        return new UserLoginResponseDto(jwtTokenProvider.createToken(userId), newRefreshToken, UserDto.convertUserToDto(user));
+        user.changeRefreshToken(createRefreshToken(user.getId()));
+        return new UserLoginResponseDto(createToken(user.getId()), user.getRefreshToken(), UserDto.convertUserToDto(user));
     }
 
     @Transactional
     public void logout(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        user.changeRefreshToken("");
+        userRepository.findById(userId).orElseThrow(UserNotFoundException::new)
+                .changeRefreshToken("");
     }
 
     @Transactional
@@ -80,6 +88,7 @@ public class SignService {
         User user = userRepository.findByUid(requestDto.getUid()).orElseThrow(UserNotFoundException::new);
         if (!Objects.equals(user.getCode(), requestDto.getCode())) throw new UserCodeNotMatchException();
         user.changeCode("");
+        user.resetFailureCount();
         user.changePassword(passwordEncoder.encode(requestDto.getNextPassword()));
     }
 
@@ -96,9 +105,11 @@ public class SignService {
             new UserUidAlreadyExistsException();
     }
 
-    private String createRefreshToken(String userId) {
-        return jwtTokenProvider.createRefreshToken(userId);
+    private String createToken(Long userId) {
+        return jwtTokenProvider.createToken(String.valueOf(userId));
     }
 
-
+    private String createRefreshToken(Long userId) {
+        return jwtTokenProvider.createRefreshToken(String.valueOf(userId));
+    }
 }

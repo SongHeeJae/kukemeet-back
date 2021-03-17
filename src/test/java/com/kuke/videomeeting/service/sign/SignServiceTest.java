@@ -6,6 +6,8 @@ import com.kuke.videomeeting.domain.Role;
 import com.kuke.videomeeting.domain.User;
 import com.kuke.videomeeting.model.dto.user.*;
 import com.kuke.videomeeting.repository.user.UserRepository;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
+import org.hibernate.query.internal.QueryImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,6 +16,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -26,9 +30,10 @@ import static org.mockito.Mockito.verify;
 class SignServiceTest {
 
     @InjectMocks private SignService signService;
-    @Mock PasswordEncoder passwordEncoder;
+    @Mock private PasswordEncoder passwordEncoder;
     @Mock private UserRepository userRepository;
     @Mock private JwtTokenProvider jwtTokenProvider;
+    @Mock private EntityManager entityManager;
 
     @Test
     public void registerTest() {
@@ -81,6 +86,52 @@ class SignServiceTest {
         verify(jwtTokenProvider).createToken(anyString());
         verify(jwtTokenProvider).createRefreshToken(anyString());
         assertThat(result.getInfo().getUid()).isEqualTo(requestDto.getUid());
+    }
+
+    @Test
+    public void loginExceptionByNotFoundUidTest() {
+
+        // given
+        UserLoginRequestDto requestDto = createUserLoginRequestDto();
+        given(userRepository.findByUid(requestDto.getUid())).willReturn(Optional.ofNullable(null));
+
+        // when, then
+        assertThatThrownBy(() -> {
+            signService.login(requestDto);
+        }).isInstanceOf(LoginFailureException.class);
+    }
+
+    @Test
+    public void loginExceptionByNotMatchPasswordTest() {
+
+        // given
+        UserLoginRequestDto requestDto = createUserLoginRequestDto();
+        Optional<User> loginUser = createUserEntityByUserLoginRequest(requestDto);
+        given(userRepository.findByUid(requestDto.getUid())).willReturn(loginUser);
+        given(passwordEncoder.matches(anyString(), anyString())).willReturn(false);
+
+        // when, then
+        assertThatThrownBy(() -> {
+            signService.login(requestDto);
+        }).isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    public void loginExceptionByLockedAccountTest() {
+
+        // given
+        UserLoginRequestDto requestDto = createUserLoginRequestDto();
+        Optional<User> loginUser = createUserEntityByUserLoginRequest(requestDto);
+        for(int i=0; i<5; i++) {
+            loginUser.get().increaseFailureCount();
+        }
+        given(userRepository.findByUid(requestDto.getUid())).willReturn(loginUser);
+
+        // when, then
+        // when, then
+        assertThatThrownBy(() -> {
+            signService.login(requestDto);
+        }).isInstanceOf(LockedAccountException.class);
     }
 
     @Test
@@ -216,6 +267,42 @@ class SignServiceTest {
         assertThatThrownBy(() -> {
             signService.changeForgottenPassword(new UserChangeForgottenPasswordRequestDto("uid", notMatchCode, nextPassword));
         }).isInstanceOf(UserCodeNotMatchException.class);
+    }
+
+    @Test
+    public void resetFailureCountWhenLoggingInTest() {
+        // given
+        UserLoginRequestDto requestDto = createUserLoginRequestDto();
+        Optional<User> loginUser = createUserEntityByUserLoginRequest(requestDto);
+        loginUser.get().increaseFailureCount();
+
+        given(userRepository.findByUid(requestDto.getUid())).willReturn(loginUser);
+        given(passwordEncoder.matches(anyString(), anyString())).willReturn(true);
+
+        // when
+        signService.login(requestDto);
+
+        // then
+        assertThat(loginUser.get().getFailureCount()).isEqualTo(0L);
+    }
+
+    @Test
+    public void resetFailureCountWhenChangingForgottenPasswordTest() {
+        // given
+        String nextPassword = "nextPassword";
+        String code = "code";
+        User user = User.createUser("uid", "password", "username", "nickname", null, null);
+        user.changeCode(code);
+        user.increaseFailureCount();
+        given(userRepository.findByUid(anyString()))
+                .willReturn(Optional.ofNullable(user));
+        given(passwordEncoder.encode(anyString())).willReturn(nextPassword);
+
+        // when
+        signService.changeForgottenPassword(new UserChangeForgottenPasswordRequestDto("uid", code, nextPassword));
+
+        // then
+        assertThat(user.getFailureCount()).isEqualTo(0L);
     }
 
 
