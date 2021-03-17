@@ -23,19 +23,13 @@ import java.util.UUID;
 public class MailService {
 
     private final JavaMailSender sender;
-    private final UserRepository userRepository;
 
     @Value("${spring.mail.username}")
     private String from;
 
-    @Value("${domain}")
-    private String domain;
-
     @Transactional
-    public void sendCodeEmailForForgottenPassword(UserSendEmailRequestDto requestDto) {
-        User user = userRepository.findByUid(requestDto.getUid()).orElseThrow(UserNotFoundException::new);
-        user.changeCode(UUID.randomUUID().toString());
-        sender.send(createTemplateForForgottenPassword(requestDto.getUid(), user.getCode()));
+    public void sendCodeEmailForForgottenPassword(String to, String code) {
+        sender.send(createTemplateForForgottenPassword(to, code));
     }
 
     private MimeMessage createTemplateForForgottenPassword(String uid, String code) {
@@ -47,7 +41,8 @@ public class MailService {
             helper.setSubject("KUKE meet 비밀번호 분실 안내 이메일입니다.");
             helper.setText("안녕하세요. KUKE meet 입니다.<br/>" +
                     "본인 확인 란에 다음 코드를 기입해주세요.<br/>" +
-                    "<strong>" + code + "</strong>", true);
+                    "<strong>" + code + "</strong><br/>" +
+                    "위 코드의 유효 시간은 5분입니다. 코드가 만료되었으면, 다시 발급해주세요.", true);
             return message;
         } catch (MessagingException e) {
             e.printStackTrace();

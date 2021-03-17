@@ -31,7 +31,6 @@ public class SignController {
     private final ResponseService responseService;
     private final SignService signService;
     private final JwtTokenProvider jwtTokenProvider;
-    private final MailService mailService;
 
     @Value("${cookie.domain}") private String cookieDomain;
     @Value("${cookie.secure}") private boolean cookieSecure;
@@ -97,7 +96,7 @@ public Result refreshToken(
     @ApiOperation(value="비밀번호 분실 이메일 전송", notes = "비밀번호 분실자에게 이메일을 전송한다.")
     @PostMapping(value = "/sign/send-code-email-for-forgotten-password")
     public Result sendCodeEmailForForgottenPassword(@Valid @RequestBody UserSendEmailRequestDto requestDto) {
-        mailService.sendCodeEmailForForgottenPassword(requestDto);
+        signService.handleCodeEmailForForgottenPasswordUser(requestDto);
         return responseService.getSuccessResult();
     }
 
@@ -107,9 +106,6 @@ public Result refreshToken(
         signService.changeForgottenPassword(requestDto);
         return responseService.getSuccessResult();
     }
-
-
-
 
     private Cookie createTokenCookie(String token, String name, int maxAge) {
         Cookie cookie = new Cookie(name, token);

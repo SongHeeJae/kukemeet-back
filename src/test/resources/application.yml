@@ -28,6 +28,9 @@ spring:
           auth:
           starttls:
             enable:
+  redis:
+    port: 1234
+    host: host
 
 domain:
   http://localhost:3000

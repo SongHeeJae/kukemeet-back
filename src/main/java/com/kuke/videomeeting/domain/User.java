@@ -35,8 +35,6 @@ public class User extends CommonEntityDate{
 
     private String refreshToken;
 
-    private String code; // 인증번호
-
     private long failureCount = 0;
 
     @ElementCollection(fetch = FetchType.LAZY)
@@ -80,10 +78,6 @@ public class User extends CommonEntityDate{
 
     public void changePassword(String password) {
         this.password = password;
-    }
-
-    public void changeCode(String code) {
-        this.code = code;
     }
 
     public void increaseFailureCount() {

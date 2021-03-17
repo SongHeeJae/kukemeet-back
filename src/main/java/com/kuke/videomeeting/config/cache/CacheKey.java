@@ -15,5 +15,8 @@ public class CacheKey {
     public static final String RECEIVED_MESSAGES = "received_messages";
     public static final int RECEIVED_MESSAGES_EXPIRE_SEC = 60 * 5;
 
+    public static final String CODE = "code";
+    public static final int CODE_EXPIRE_SEC = 60 * 5;
+
 
 }

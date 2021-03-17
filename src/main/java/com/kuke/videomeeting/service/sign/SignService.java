@@ -6,6 +6,8 @@ import com.kuke.videomeeting.domain.Role;
 import com.kuke.videomeeting.domain.User;
 import com.kuke.videomeeting.model.dto.user.*;
 import com.kuke.videomeeting.repository.user.UserRepository;
+import com.kuke.videomeeting.service.cache.CacheService;
+import com.kuke.videomeeting.service.mail.MailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,17 +21,19 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.util.Collections;
 import java.util.Objects;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class SignService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final EntityManager entityManager;
+    private final MailService mailService;
+    private final CacheService cacheService;
 
-    @Transactional
     public void register(UserRegisterRequestDto requestDto) {
         validateDuplicateUserByNickname(requestDto.getNickname());
         validateDuplicateUserByUid(requestDto.getUid());
@@ -44,7 +48,6 @@ public class SignService {
         );
     }
 
-    @Transactional
     public UserLoginResponseDto login(UserLoginRequestDto requestDto){
         User user = userRepository.findByUid(requestDto.getUid()).orElseThrow(LoginFailureException::new);
         if(user.getFailureCount() >= 5) throw new LockedAccountException();
@@ -57,8 +60,7 @@ public class SignService {
         user.resetFailureCount();
         return new UserLoginResponseDto(createToken(user.getId()), user.getRefreshToken(), UserDto.convertUserToDto(user));
     }
-    
-    @Transactional
+
     public UserLoginResponseDto refreshToken(String refreshToken) {
         String token = jwtTokenProvider.removeType(refreshToken);
         if(!jwtTokenProvider.validateToken(token)) throw new AccessDeniedException("");
@@ -69,13 +71,11 @@ public class SignService {
         return new UserLoginResponseDto(createToken(user.getId()), user.getRefreshToken(), UserDto.convertUserToDto(user));
     }
 
-    @Transactional
     public void logout(Long userId) {
         userRepository.findById(userId).orElseThrow(UserNotFoundException::new)
                 .changeRefreshToken("");
     }
 
-    @Transactional
     public void changePassword(Long userId, UserChangePasswordRequestDto requestDto) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         if(!passwordEncoder.matches(requestDto.getCurrentPassword(), user.getPassword()))
@@ -83,13 +83,24 @@ public class SignService {
         user.changePassword(passwordEncoder.encode(requestDto.getNextPassword()));
     }
 
-    @Transactional
     public void changeForgottenPassword(UserChangeForgottenPasswordRequestDto requestDto) {
         User user = userRepository.findByUid(requestDto.getUid()).orElseThrow(UserNotFoundException::new);
-        if (!Objects.equals(user.getCode(), requestDto.getCode())) throw new UserCodeNotMatchException();
-        user.changeCode("");
+        if (!Objects.equals(cacheService.readCodeCache(requestDto.getUid()), requestDto.getCode())) throw new UserCodeNotMatchException();
         user.resetFailureCount();
         user.changePassword(passwordEncoder.encode(requestDto.getNextPassword()));
+    }
+
+    @Transactional(readOnly = true)
+    public void handleCodeEmailForForgottenPasswordUser(UserSendEmailRequestDto requestDto) {
+        userRepository.findByUid(requestDto.getUid()).orElseThrow(UserNotFoundException::new);
+        String code = generateCode();
+        cacheService.deleteCodeCache(requestDto.getUid());
+        cacheService.createCodeCache(requestDto.getUid(), code);
+        mailService.sendCodeEmailForForgottenPassword(requestDto.getUid(), code);
+    }
+
+    private String generateCode() {
+        return UUID.randomUUID().toString();
     }
 
     private void validateDuplicateUserByUid(String uid) {

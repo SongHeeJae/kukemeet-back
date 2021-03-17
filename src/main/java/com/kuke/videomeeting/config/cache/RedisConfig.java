@@ -21,7 +21,6 @@ import java.util.Map;
 
 @EnableCaching
 @Configuration
-@Profile({"local", "prod"})
 public class RedisConfig {
 
     @Value("${spring.redis.port}")
@@ -53,6 +52,7 @@ public class RedisConfig {
         cacheConfigurations.put(CacheKey.FRIENDS, RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(CacheKey.FRIENDS_EXPIRE_SEC)));
         cacheConfigurations.put(CacheKey.SENT_MESSAGES, RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(CacheKey.SENT_MESSAGES_EXPIRE_SEC)));
         cacheConfigurations.put(CacheKey.RECEIVED_MESSAGES, RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(CacheKey.RECEIVED_MESSAGES_EXPIRE_SEC)));
+        cacheConfigurations.put(CacheKey.CODE, RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(CacheKey.CODE_EXPIRE_SEC)));
 
         return RedisCacheManager.RedisCacheManagerBuilder
                 .fromConnectionFactory(redisConnectionFactory())

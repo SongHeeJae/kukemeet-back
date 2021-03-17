@@ -35,7 +35,6 @@ import static org.mockito.Mockito.verify;
 class SignControllerTest {
     @Mock private ResponseService responseService;
     @Mock private SignService signService;
-    @Mock private MailService mailService;
     @InjectMocks private SignController signController;
     private MockMvc mockMvc;
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -292,7 +291,7 @@ class SignControllerTest {
                 .content(content))
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
 
-        verify(mailService).sendCodeEmailForForgottenPassword(info);
+        verify(signService).handleCodeEmailForForgottenPasswordUser(info);
     }
 
     @Test

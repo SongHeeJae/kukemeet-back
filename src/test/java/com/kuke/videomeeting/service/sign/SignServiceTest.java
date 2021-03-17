@@ -6,6 +6,7 @@ import com.kuke.videomeeting.domain.Role;
 import com.kuke.videomeeting.domain.User;
 import com.kuke.videomeeting.model.dto.user.*;
 import com.kuke.videomeeting.repository.user.UserRepository;
+import com.kuke.videomeeting.service.cache.CacheService;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.query.internal.QueryImpl;
 import org.junit.jupiter.api.Test;
@@ -34,6 +35,7 @@ class SignServiceTest {
     @Mock private UserRepository userRepository;
     @Mock private JwtTokenProvider jwtTokenProvider;
     @Mock private EntityManager entityManager;
+    @Mock private CacheService cacheService;
 
     @Test
     public void registerTest() {
@@ -240,10 +242,10 @@ class SignServiceTest {
         String nextPassword = "nextPassword";
         String code = "code";
         User user = User.createUser("uid", "password", "username", "nickname", null, null);
-        user.changeCode(code);
         given(userRepository.findByUid(anyString()))
                 .willReturn(Optional.ofNullable(user));
         given(passwordEncoder.encode(anyString())).willReturn(nextPassword);
+        given(cacheService.readCodeCache(anyString())).willReturn(code);
 
         // when
         signService.changeForgottenPassword(new UserChangeForgottenPasswordRequestDto("uid", code, nextPassword));
@@ -259,9 +261,8 @@ class SignServiceTest {
         String code = "code";
         String notMatchCode =  "notMatchCode";
         User user = User.createUser("uid", "password", "username", "nickname", null, null);
-        user.changeCode(code);
-        given(userRepository.findByUid(anyString()))
-                .willReturn(Optional.ofNullable(user));
+        given(userRepository.findByUid(anyString())).willReturn(Optional.ofNullable(user));
+        given(cacheService.readCodeCache(anyString())).willReturn(code);
 
         // when, then
         assertThatThrownBy(() -> {
@@ -292,11 +293,11 @@ class SignServiceTest {
         String nextPassword = "nextPassword";
         String code = "code";
         User user = User.createUser("uid", "password", "username", "nickname", null, null);
-        user.changeCode(code);
         user.increaseFailureCount();
         given(userRepository.findByUid(anyString()))
                 .willReturn(Optional.ofNullable(user));
         given(passwordEncoder.encode(anyString())).willReturn(nextPassword);
+        given(cacheService.readCodeCache(anyString())).willReturn(code);
 
         // when
         signService.changeForgottenPassword(new UserChangeForgottenPasswordRequestDto("uid", code, nextPassword));
