@@ -40,6 +40,11 @@ public class RoomController {
         return responseService.getListResult(roomService.readAllRooms());
     }
 
+    @GetMapping("/rooms/sessions")
+    public Result readAllSessions() {
+        return responseService.getListResult(roomService.readAllSessions());
+    }
+
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "access-token", required = true, dataType = "String", paramType = "header")
     })

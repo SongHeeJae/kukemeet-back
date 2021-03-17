@@ -140,4 +140,10 @@ public class ExceptionAdvice {
         return responseService.getFailResult(-1018, "계정이 잠겼습니다. 비밀번호 분실 기능을 이용해서 비밀번호를 변경해주세요.");
     }
 
+    @ExceptionHandler(ReadAllSessionsFailureException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result readAllSessionsFailureException() {
+        return responseService.getFailResult(-1019, "세션 조회에 실패하였습니다.");
+    }
+
 }

@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.kuke.videomeeting.advice.exception.CreateRoomFailureException;
 import com.kuke.videomeeting.advice.exception.DestroyRoomFailureException;
 import com.kuke.videomeeting.advice.exception.ReadAllRoomsFailureException;
+import com.kuke.videomeeting.advice.exception.ReadAllSessionsFailureException;
 import com.kuke.videomeeting.model.dto.room.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,6 +55,19 @@ public class RoomService {
             throw new ReadAllRoomsFailureException();
         }
     }
+
+    public List<String> readAllSessions() {
+        try {
+            HttpEntity<String> request = generateRequest(generateJsonForReadingAllSessions());
+            ResponseEntity<String> response = sendPostRequest(request);
+            SessionResultDto result = gson.fromJson(response.getBody(), SessionResultDto.class);
+            return result.getSessions();
+        } catch (Exception e) {
+            throw new ReadAllSessionsFailureException();
+        }
+    }
+
+
 
     public void destroyRoom(String room) {
         try {
@@ -113,4 +127,14 @@ public class RoomService {
                 "\"request\":{\"request\":\"destroy\", \"room\":" + room + ", \"secret\":\"" + roomSecret + "\"}" +
                 "}";
     }
+
+    private String generateJsonForReadingAllSessions() {
+        return "{" +
+                "\"janus\":\"list_sessions\", " +
+                "\"transaction\":\"" + (int) (Math.random() * Integer.MAX_VALUE) + "\", " +
+                "\"admin_secret\":\"" + adminSecret + "\"" +
+                "}";
+    }
+
+
 }
