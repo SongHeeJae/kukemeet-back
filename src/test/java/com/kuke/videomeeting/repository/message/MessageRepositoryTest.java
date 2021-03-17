@@ -75,6 +75,6 @@ class MessageRepositoryTest {
     }
 
     private User createUserEntity(String name) {
-        return userRepository.save(User.createUser(name, name, name, name, null, null));
+        return userRepository.save(User.createUser(name, name, name, name, null));
     }
 }

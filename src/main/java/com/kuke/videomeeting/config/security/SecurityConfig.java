@@ -43,8 +43,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // jwt로 인증하므로 세션 미사용
                 .and()
                     .authorizeRequests()
-                        .antMatchers(HttpMethod.POST, "/api/sign/login", "/api/sign/register", "/api/sign/refresh-token", "/api/sign/send-code-email-for-forgotten-password").permitAll()
+                        .antMatchers(HttpMethod.POST, "/api/sign/login", "/api/sign/register", "/api/sign/refresh-token", "/api/sign/send-code-email-for-forgotten-password", "/api/sign/login-by-provider", "/api/sign/register-by-provider").permitAll()
                         .antMatchers(HttpMethod.PUT, "/api/sign/change-forgotten-password").permitAll()
+                        .antMatchers(HttpMethod.POST, "/api/social/get-token-by-provider").permitAll()
                         .antMatchers(HttpMethod.GET, "/api/users/me", "/api/friends/me").hasRole("NORMAL")
                         .antMatchers(HttpMethod.GET, "/exception", "/exception/**").permitAll()
                         .antMatchers(HttpMethod.GET, "/api/users", "/api/users/**", "/api/users/nickname",

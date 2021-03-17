@@ -62,3 +62,8 @@ cloud:
       secretKey:
       instance-profile: false
 
+kakao:
+  clientId:
+  redirect:
+    uri:
+

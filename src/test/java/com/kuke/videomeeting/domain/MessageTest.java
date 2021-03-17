@@ -25,8 +25,8 @@ class MessageTest {
 
     @BeforeEach
     public void beforeEach() {
-        userRepository.save(User.createUser("sender", "1234", "sender", "sender", null, Collections.singletonList(Role.ROLE_NORMAL)));
-        userRepository.save(User.createUser("receiver", "1234", "receiver", "receiver", null, Collections.singletonList(Role.ROLE_NORMAL)));
+        userRepository.save(User.createUser("sender", "1234", "sender", "sender", Collections.singletonList(Role.ROLE_NORMAL)));
+        userRepository.save(User.createUser("receiver", "1234", "receiver", "receiver", Collections.singletonList(Role.ROLE_NORMAL)));
     }
 
     @Test

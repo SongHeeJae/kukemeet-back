@@ -1,11 +1,11 @@
 package com.kuke.videomeeting.controller.sign;
 
+import com.kuke.videomeeting.advice.exception.NotRegisteredProviderException;
 import com.kuke.videomeeting.config.security.JwtTokenProvider;
 import com.kuke.videomeeting.model.auth.CustomUserDetails;
 import com.kuke.videomeeting.model.dto.response.Result;
 import com.kuke.videomeeting.model.dto.user.*;
 import com.kuke.videomeeting.service.common.ResponseService;
-import com.kuke.videomeeting.service.mail.MailService;
 import com.kuke.videomeeting.service.sign.SignService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -20,7 +20,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import javax.validation.constraints.Email;
+import java.util.Objects;
 
 
 @Api(value = "Sign Controller", tags = {"Sign"})
@@ -48,6 +48,38 @@ public class SignController {
              @ApiIgnore HttpServletResponse response,
             @Valid @RequestBody UserLoginRequestDto requestDto) {
         UserLoginResponseDto result = signService.login(requestDto);
+        response.addCookie(createTokenCookie(result.getAccessToken(), "kuke-access-token", (int) jwtTokenProvider.getTokenValidMillisecond() / 1000));
+        response.addCookie(createTokenCookie(result.getRefreshToken(), "kuke-refresh-token", (int) jwtTokenProvider.getRefreshTokenValidMillisecond() / 1000));
+        return responseService.getSingleResult(result);
+    }
+
+    @ApiOperation(value="소셜 로그인", notes = "소셜 로그인을 한다.")
+    @PostMapping(value = "/sign/login-by-provider")
+    public Result loginByProvider(
+            @ApiIgnore HttpServletResponse response,
+            @Valid @RequestBody UserLoginByProviderRequestDto requestDto) {
+        UserLoginResponseDto result;
+        if(Objects.equals(requestDto.getProvider(), "kakao")) {
+            result = signService.loginByKakao(requestDto);
+        } else {
+            throw new NotRegisteredProviderException();
+        }
+        response.addCookie(createTokenCookie(result.getAccessToken(), "kuke-access-token", (int) jwtTokenProvider.getTokenValidMillisecond() / 1000));
+        response.addCookie(createTokenCookie(result.getRefreshToken(), "kuke-refresh-token", (int) jwtTokenProvider.getRefreshTokenValidMillisecond() / 1000));
+        return responseService.getSingleResult(result);
+    }
+
+    @ApiOperation(value="소셜 회원가입", notes = "소셜 회원가입을 한다.")
+    @PostMapping(value = "/sign/register-by-provider")
+    public Result registerByProvider(
+            @ApiIgnore HttpServletResponse response,
+            @Valid @RequestBody UserRegisterByProviderRequestDto requestDto) {
+        UserLoginResponseDto result;
+        if(Objects.equals(requestDto.getProvider(), "kakao")) {
+            result = signService.registerByKakao(requestDto);
+        } else {
+            throw new NotRegisteredProviderException();
+        }
         response.addCookie(createTokenCookie(result.getAccessToken(), "kuke-access-token", (int) jwtTokenProvider.getTokenValidMillisecond() / 1000));
         response.addCookie(createTokenCookie(result.getRefreshToken(), "kuke-refresh-token", (int) jwtTokenProvider.getRefreshTokenValidMillisecond() / 1000));
         return responseService.getSingleResult(result);
@@ -107,7 +139,7 @@ public Result refreshToken(
         return responseService.getSuccessResult();
     }
 
-    private Cookie createTokenCookie(String token, String name, int maxAge) {
+    public Cookie createTokenCookie(String token, String name, int maxAge) {
         Cookie cookie = new Cookie(name, token);
         cookie.setMaxAge(maxAge);
         cookie.setSecure(cookieSecure);

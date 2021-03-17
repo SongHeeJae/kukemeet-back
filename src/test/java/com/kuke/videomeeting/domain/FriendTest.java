@@ -18,8 +18,8 @@ class FriendTest {
 
     @BeforeEach
     public void beforeEach() {
-        User user1 = User.createUser("user1", "1234", "user1", "user1", null,  Collections.singletonList(Role.ROLE_NORMAL));
-        User user2 = User.createUser("user2", "1234", "user2", "user2", null,  Collections.singletonList(Role.ROLE_NORMAL));
+        User user1 = User.createUser("user1", "1234", "user1", "user1",  Collections.singletonList(Role.ROLE_NORMAL));
+        User user2 = User.createUser("user2", "1234", "user2", "user2",  Collections.singletonList(Role.ROLE_NORMAL));
         em.persist(user1);
         em.persist(user2);
     }

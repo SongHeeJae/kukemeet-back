@@ -104,6 +104,6 @@ class FriendServiceTest {
     }
 
     private User createUserEntity(String name) {
-        return User.createUser(name, name, name, name, null, null);
+        return User.createUser(name, name, name, name, null);
     }
 }

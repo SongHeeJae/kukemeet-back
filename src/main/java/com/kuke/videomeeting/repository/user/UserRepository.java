@@ -12,7 +12,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByUid(String uid);
     Optional<User> findByNickname(String nickname);
-    Optional<User> findByUidAndProvider(String uid, String provider);
 
     @Query("select u from User u join fetch u.roles where u.id = :id")
     Optional<User> findByIdWithRoles(@Param("id") Long id);

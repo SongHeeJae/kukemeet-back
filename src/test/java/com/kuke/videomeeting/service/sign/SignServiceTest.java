@@ -7,6 +7,7 @@ import com.kuke.videomeeting.domain.User;
 import com.kuke.videomeeting.model.dto.user.*;
 import com.kuke.videomeeting.repository.user.UserRepository;
 import com.kuke.videomeeting.service.cache.CacheService;
+import com.kuke.videomeeting.service.social.KakaoService;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.query.internal.QueryImpl;
 import org.junit.jupiter.api.Test;
@@ -36,6 +37,7 @@ class SignServiceTest {
     @Mock private JwtTokenProvider jwtTokenProvider;
     @Mock private EntityManager entityManager;
     @Mock private CacheService cacheService;
+    @Mock private KakaoService kakaoService;
 
     @Test
     public void registerTest() {
@@ -142,7 +144,7 @@ class SignServiceTest {
         String refreshToken = "Bearer refreshToken";
         String newAccessToken = "Bearer newAccessToken";
         String newRefreshToken = "Bearer newRefreshToken";
-        User user = User.createUser("uid", "password", "username", "nickname", null, null);
+        User user = User.createUser("uid", "password", "username", "nickname", null);
         user.changeRefreshToken(refreshToken);
         given(userRepository.findById(anyLong())).willReturn(Optional.ofNullable(user));
         given(jwtTokenProvider.removeType(anyString())).willReturn("refreshToken");
@@ -164,7 +166,7 @@ class SignServiceTest {
     public void refreshTokenExceptionByInvalidateTokenTest() {
         // given
         String refreshToken = "Bearer refreshToken";
-        User user = User.createUser("uid", "password", "username", "nickname", null, null);
+        User user = User.createUser("uid", "password", "username", "nickname", null);
         user.changeRefreshToken(refreshToken);
         given(jwtTokenProvider.removeType(anyString())).willReturn("refreshToken");
         given(jwtTokenProvider.validateToken(anyString())).willReturn(false);
@@ -177,7 +179,7 @@ class SignServiceTest {
     public void refreshTokenExceptionByDifferentTokenTest() {
         // given
         String refreshToken = "Bearer refreshToken";
-        User user = User.createUser("uid", "password", "username", "nickname", null, null);
+        User user = User.createUser("uid", "password", "username", "nickname", null);
         user.changeRefreshToken(refreshToken + "different");
         given(userRepository.findById(anyLong())).willReturn(Optional.ofNullable(user));
         given(jwtTokenProvider.removeType(anyString())).willReturn("refreshToken");
@@ -191,7 +193,7 @@ class SignServiceTest {
     @Test
     public void logout() {
         // given
-        User user = User.createUser("uid", "password", "username", "nickname", null, null);
+        User user = User.createUser("uid", "password", "username", "nickname", null);
         user.changeRefreshToken("refresh-token");
         given(userRepository.findById(anyLong())).willReturn(Optional.ofNullable(user));
 
@@ -208,7 +210,7 @@ class SignServiceTest {
         // given
         String current = "current";
         String next = "next";
-        User user = User.createUser("uid", current, "username", "nickname", null, null);
+        User user = User.createUser("uid", current, "username", "nickname", null);
         given(userRepository.findById(anyLong()))
                 .willReturn(Optional.ofNullable(user));
         given(passwordEncoder.matches(anyString(), anyString())).willReturn(true);
@@ -226,7 +228,7 @@ class SignServiceTest {
         // given
         String current = "current";
         String next = "next";
-        User user = User.createUser("uid", current, "username", "nickname", null, null);
+        User user = User.createUser("uid", current, "username", "nickname", null);
         given(userRepository.findById(anyLong()))
                 .willReturn(Optional.ofNullable(user));
         given(passwordEncoder.matches(anyString(), anyString())).willReturn(false);
@@ -241,7 +243,7 @@ class SignServiceTest {
         // given
         String nextPassword = "nextPassword";
         String code = "code";
-        User user = User.createUser("uid", "password", "username", "nickname", null, null);
+        User user = User.createUser("uid", "password", "username", "nickname", null);
         given(userRepository.findByUid(anyString()))
                 .willReturn(Optional.ofNullable(user));
         given(passwordEncoder.encode(anyString())).willReturn(nextPassword);
@@ -260,7 +262,7 @@ class SignServiceTest {
         String nextPassword = "nextPassword";
         String code = "code";
         String notMatchCode =  "notMatchCode";
-        User user = User.createUser("uid", "password", "username", "nickname", null, null);
+        User user = User.createUser("uid", "password", "username", "nickname", null);
         given(userRepository.findByUid(anyString())).willReturn(Optional.ofNullable(user));
         given(cacheService.readCodeCache(anyString())).willReturn(code);
 
@@ -292,7 +294,7 @@ class SignServiceTest {
         // given
         String nextPassword = "nextPassword";
         String code = "code";
-        User user = User.createUser("uid", "password", "username", "nickname", null, null);
+        User user = User.createUser("uid", "password", "username", "nickname", null);
         user.increaseFailureCount();
         given(userRepository.findByUid(anyString()))
                 .willReturn(Optional.ofNullable(user));
@@ -306,18 +308,57 @@ class SignServiceTest {
         assertThat(user.getFailureCount()).isEqualTo(0L);
     }
 
+    @Test
+    public void loginByKakaoTest() {
+
+        // given
+        String uid = "uid";
+        User user = User.createProviderUser(uid, "username", "nickname", Collections.emptyList());
+        given(kakaoService.generateKakaoUid(anyString())).willReturn(uid);
+        given(userRepository.findByUid(anyString())).willReturn(Optional.ofNullable(user));
+        given(jwtTokenProvider.createToken(anyString())).willReturn("token");
+        given(jwtTokenProvider.createRefreshToken(anyString())).willReturn("refreshToken");
+
+        // when
+        UserLoginResponseDto result = signService.loginByKakao(new UserLoginByProviderRequestDto("kakao", "accessToken"));
+
+        // then
+        assertThat(result.getInfo().getUid()).isEqualTo(uid);
+
+    }
+
+    @Test
+    public void registerByKakaoTest() {
+
+        // given
+        String uid = "uid";
+        User user = User.createProviderUser(uid, "username", "nickname", Collections.emptyList());
+        given(kakaoService.generateKakaoUid(anyString())).willReturn(uid);
+        given(userRepository.save(any())).willReturn(user);
+        given(jwtTokenProvider.createToken(anyString())).willReturn("token");
+        given(jwtTokenProvider.createRefreshToken(anyString())).willReturn("refreshToken");
+
+        // when
+        UserLoginResponseDto result = signService.registerByKakao(new UserRegisterByProviderRequestDto("accessToken", "kakao", "username", "nickname"));
+
+        // then
+        assertThat(result.getInfo().getUid()).isEqualTo(uid);
+
+    }
+
+
 
     private Optional<User> createUserEntityByUserRegisterRequest(UserRegisterRequestDto requestDto) {
         return Optional.ofNullable(User.createUser(
                 requestDto.getUid(), requestDto.getPassword(), requestDto.getUsername(), requestDto.getNickname(),
-                null, Collections.singletonList(Role.ROLE_NORMAL))
+                Collections.singletonList(Role.ROLE_NORMAL))
         );
     }
 
     private Optional<User> createUserEntityByUserLoginRequest(UserLoginRequestDto requestDto) {
         return Optional.ofNullable(User.createUser(
                 requestDto.getUid(), requestDto.getPassword(), "username", "nickname",
-                null, Collections.singletonList(Role.ROLE_NORMAL))
+                Collections.singletonList(Role.ROLE_NORMAL))
         );
     }
 

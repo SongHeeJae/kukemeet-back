@@ -39,7 +39,7 @@ class UserServiceTest {
 
         // given
         given(userRepository.findById(anyLong())).willReturn(Optional.ofNullable(User.createUser("uid", "password", "username",
-                "nickname", null, null)));
+                "nickname", null)));
 
         // when
         UserDto result = userService.readUser(anyLong());
@@ -53,7 +53,7 @@ class UserServiceTest {
 
         // given
         given(userRepository.findById(anyLong())).willReturn(Optional.ofNullable(User.createUser("uid", "password", "username",
-                "nickname", null, null)));
+                "nickname", null)));
 
         // when
         userService.deleteUser(1L);
@@ -66,7 +66,7 @@ class UserServiceTest {
     public void readUserByNicknameTest() {
         // given
         given(userRepository.findByNickname(anyString())).willReturn(Optional.ofNullable(User.createUser("uid", "password", "username",
-                "nickname", null, null)));
+                "nickname", null)));
 
         // when
         UserDto result = userService.readUserByNickname(anyString());
@@ -96,7 +96,7 @@ class UserServiceTest {
         // given
         String current = "current";
         String next = "next";
-        User user = User.createUser("uid", "password", current, current, null, null);
+        User user = User.createUser("uid", "password", current, current, null);
         given(userRepository.findById(anyLong()))
                 .willReturn(Optional.ofNullable(user));
 
@@ -114,8 +114,8 @@ class UserServiceTest {
         // given
         String currentNickname = "current";
         String nextNickname = "next";
-        User user1 = User.createUser("uid", "password", "username", currentNickname, null, null);
-        User user2 = User.createUser("uid", "password", "username", nextNickname, null, null);
+        User user1 = User.createUser("uid", "password", "username", currentNickname, null);
+        User user2 = User.createUser("uid", "password", "username", nextNickname, null);
 
         given(userRepository.findById(anyLong()))
                 .willReturn(Optional.ofNullable(user1));

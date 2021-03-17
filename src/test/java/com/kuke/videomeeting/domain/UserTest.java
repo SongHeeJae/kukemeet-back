@@ -27,7 +27,7 @@ class UserTest {
         String nickname = "nickname";
         List<Role> roles = Collections.singletonList(Role.ROLE_NORMAL);
 
-        User user = User.createUser(uid, password, username, nickname, null, roles);
+        User user = User.createUser(uid, password, username, nickname, roles);
 
         // when
         em.persist(user);
@@ -39,7 +39,6 @@ class UserTest {
                 .setParameter("id", user.getId())
                 .getSingleResult();
         assertThat(result.getUid()).isEqualTo(uid);
-        assertThat(result.getProvider()).isNull();
     }
 
 

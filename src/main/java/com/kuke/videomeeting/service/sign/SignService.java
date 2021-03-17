@@ -8,17 +8,14 @@ import com.kuke.videomeeting.model.dto.user.*;
 import com.kuke.videomeeting.repository.user.UserRepository;
 import com.kuke.videomeeting.service.cache.CacheService;
 import com.kuke.videomeeting.service.mail.MailService;
+import com.kuke.videomeeting.service.social.KakaoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.UUID;
@@ -33,6 +30,7 @@ public class SignService {
     private final EntityManager entityManager;
     private final MailService mailService;
     private final CacheService cacheService;
+    private final KakaoService kakaoService;
 
     public void register(UserRegisterRequestDto requestDto) {
         validateDuplicateUserByNickname(requestDto.getNickname());
@@ -43,7 +41,6 @@ public class SignService {
                         passwordEncoder.encode(requestDto.getPassword()),
                         requestDto.getUsername(),
                         requestDto.getNickname(),
-                        null,
                         Collections.singletonList(Role.ROLE_NORMAL))
         );
     }
@@ -58,7 +55,29 @@ public class SignService {
         }
         user.changeRefreshToken(createRefreshToken(user.getId()));
         user.resetFailureCount();
-        return new UserLoginResponseDto(createToken(user.getId()), user.getRefreshToken(), UserDto.convertUserToDto(user));
+        return UserLoginResponseDto.convertUserToDto(createToken(user.getId()), user.getRefreshToken(), user);
+    }
+
+    public UserLoginResponseDto loginByKakao(UserLoginByProviderRequestDto requestDto) {
+        String uid = kakaoService.generateKakaoUid(requestDto.getAccessToken());
+        User user = userRepository.findByUid(uid).orElseThrow(NotRegisteredProviderUserInfoException::new);
+        user.changeRefreshToken(createRefreshToken(user.getId()));
+        return UserLoginResponseDto.convertUserToDto(createToken(user.getId()), user.getRefreshToken(), user);
+    }
+
+    public UserLoginResponseDto registerByKakao(UserRegisterByProviderRequestDto requestDto) {
+        String uid = kakaoService.generateKakaoUid(requestDto.getAccessToken());
+        validateDuplicateUserByUid(uid);
+        validateDuplicateUserByNickname(requestDto.getNickname());
+        User user = userRepository.save(
+                User.createProviderUser(
+                        uid,
+                        requestDto.getUsername(),
+                        requestDto.getNickname(),
+                        Collections.singletonList(Role.ROLE_NORMAL))
+        );
+        user.changeRefreshToken(createRefreshToken(user.getId()));
+        return UserLoginResponseDto.convertUserToDto(createToken(user.getId()), user.getRefreshToken(), user);
     }
 
     public UserLoginResponseDto refreshToken(String refreshToken) {
@@ -109,11 +128,6 @@ public class SignService {
 
     private void validateDuplicateUserByNickname(String nickname) {
         if(userRepository.findByNickname(nickname).isPresent()) throw new UserNicknameAlreadyExistsException();
-    }
-
-    private void validateDuplicateUserByProvider(String uid, String provider) {
-        if(StringUtils.hasText(provider) && userRepository.findByUidAndProvider(uid, provider).isPresent())
-            new UserUidAlreadyExistsException();
     }
 
     private String createToken(Long userId) {

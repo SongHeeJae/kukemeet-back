@@ -31,8 +31,6 @@ public class User extends CommonEntityDate{
     @Column(nullable = false, unique = true)
     private String nickname;
 
-    private String provider;
-
     private String refreshToken;
 
     private long failureCount = 0;
@@ -53,13 +51,21 @@ public class User extends CommonEntityDate{
     @OneToMany(mappedBy = "to", cascade = CascadeType.REMOVE)
     List<Friend> addedMe;
 
-    public static User createUser(String uid, String password, String username, String nickname, String provider, List<Role> roles) {
+    public static User createUser(String uid, String password, String username, String nickname, List<Role> roles) {
         User user = new User();
         user.uid = uid;
         user.password = password;
         user.username = username;
         user.nickname = nickname;
-        user.provider = provider;
+        user.roles = roles;
+        return user;
+    }
+
+    public static User createProviderUser(String uid, String username, String nickname, List<Role> roles) {
+        User user = new User();
+        user.uid = uid;
+        user.username = username;
+        user.nickname = nickname;
         user.roles = roles;
         return user;
     }

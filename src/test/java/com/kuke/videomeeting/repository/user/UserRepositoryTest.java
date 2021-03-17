@@ -80,6 +80,6 @@ class UserRepositoryTest {
     }
 
     private User createUserEntity(String uid, String username, String nickname) {
-        return userRepository.save(User.createUser(uid, "password", username, nickname, null, null));
+        return userRepository.save(User.createUser(uid, "password", username, nickname, null));
     }
 }

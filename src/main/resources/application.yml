@@ -7,3 +7,7 @@ spring:
     multipart:
       max-file-size: 300MB
       max-request-size: 300MB
+
+kakao:
+  redirect:
+    uri: /register-provider?provider=kakao

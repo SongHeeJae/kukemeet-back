@@ -146,4 +146,22 @@ public class ExceptionAdvice {
         return responseService.getFailResult(-1019, "세션 조회에 실패하였습니다.");
     }
 
+    @ExceptionHandler(NotRegisteredProviderUserInfoException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result notRegisteredProviderUserInfoException() {
+        return responseService.getFailResult(-1020, "소셜 로그인 사용자의 회원 정보가 아직 입력되지 않았습니다.");
+    }
+
+    @ExceptionHandler(KakaoCommunicationFailureException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result kakaoCommunicationFailureException() {
+        return responseService.getFailResult(-1021, "카카오 API 통신 중에 오류가 발생하였습니다.");
+    }
+
+    @ExceptionHandler(NotRegisteredProviderException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result notRegisteredProviderException() {
+        return responseService.getFailResult(-1022, "등록된 소셜 공급자가 아닙니다.");
+    }
+
 }

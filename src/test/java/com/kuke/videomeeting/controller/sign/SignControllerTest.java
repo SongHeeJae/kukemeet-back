@@ -7,6 +7,7 @@ import com.kuke.videomeeting.model.dto.user.*;
 import com.kuke.videomeeting.service.common.ResponseService;
 import com.kuke.videomeeting.service.mail.MailService;
 import com.kuke.videomeeting.service.sign.SignService;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,6 +28,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.util.NestedServletException;
 
+import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
@@ -246,6 +249,40 @@ class SignControllerTest {
 
 
         verify(signService).login(info);
+    }
+
+    @Test
+    public void loginByKakaoProviderTest() throws Exception {
+        // given
+        UserLoginByProviderRequestDto info = new UserLoginByProviderRequestDto("kakao", "accessToken");
+        String content = objectMapper.writeValueAsString(info);
+
+        // when, then
+        assertThatThrownBy(() -> {
+            mockMvc.perform(MockMvcRequestBuilders.post("/api/sign/login-by-provider")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(content))
+                    .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
+        }).isInstanceOf(NestedServletException.class);
+
+        verify(signService).loginByKakao(any());
+    }
+
+    @Test
+    public void registerByKakaoProviderTest() throws Exception {
+        // given
+        UserRegisterByProviderRequestDto info = new UserRegisterByProviderRequestDto("accessToken", "kakao", "username", "nickname");
+        String content = objectMapper.writeValueAsString(info);
+
+        // when, then
+        assertThatThrownBy(() -> {
+            mockMvc.perform(MockMvcRequestBuilders.post("/api/sign/register-by-provider")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(content))
+                    .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
+        }).isInstanceOf(NestedServletException.class);
+
+        verify(signService).registerByKakao(any());
     }
 
     @Test
