@@ -164,4 +164,10 @@ public class ExceptionAdvice {
         return responseService.getFailResult(-1022, "등록된 소셜 공급자가 아닙니다.");
     }
 
+    @ExceptionHandler(RoomNotFoundException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result roomNotFoundException() {
+        return responseService.getFailResult(-1023, "생성된 방을 찾을 수 없습니다.");
+    }
+
 }

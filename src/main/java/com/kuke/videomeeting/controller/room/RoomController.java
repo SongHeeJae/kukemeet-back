@@ -37,19 +37,27 @@ public class RoomController {
 
     @GetMapping("/rooms")
     public Result readAllRooms() {
-        return responseService.getListResult(roomService.readAllRooms());
+        return responseService.getSingleResult(roomService.readAllRooms());
     }
 
     @GetMapping("/rooms/sessions")
     public Result readAllSessions() {
-        return responseService.getListResult(roomService.readAllSessions());
+        return responseService.getSingleResult(roomService.readAllSessions());
     }
+
+    @GetMapping("/rooms/db/{number}")
+    public Result readRoomInDB(@PathVariable("number") String number) {
+        return responseService.getSingleResult(roomService.readRoomInDB(number));
+    }
+
 
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "access-token", required = true, dataType = "String", paramType = "header")
     })
     @PostMapping("/rooms")
-    public Result createRoom(@Valid @RequestBody RoomCreateRequestDto requestDto) {
-        return responseService.getSingleResult(roomService.createRoom(requestDto));
+    public Result createRoom(
+            @ApiIgnore @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Valid @RequestBody RoomCreateRequestDto requestDto) {
+        return responseService.getSingleResult(roomService.createRoom(userDetails.getId(), requestDto));
     }
 }

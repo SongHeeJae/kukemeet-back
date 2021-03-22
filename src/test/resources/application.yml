@@ -39,7 +39,7 @@ domain:
 janus:
   admin:
     secret: test
-    server: test
+  server: test
   room:
     secret: test
 

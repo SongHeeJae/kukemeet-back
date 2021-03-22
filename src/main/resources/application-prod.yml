@@ -20,5 +20,5 @@ domain:
   https://kukemeet.com
 
 janus:
-  admin:
-    server: https://media.kukemeet.com/admin
+  server:
+    https://media.kukemeet.com # 콤마로 분류

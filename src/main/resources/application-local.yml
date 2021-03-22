@@ -8,8 +8,8 @@ spring:
     open-in-view: false
 
 janus:
-  admin:
-    server: http://media.kukemeet.com/admin
+  server:
+    http://media.kukemeet.com # 콤마로 분류
 
 cookie:
   secure:

@@ -27,7 +27,6 @@ public class SignService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
-    private final EntityManager entityManager;
     private final MailService mailService;
     private final CacheService cacheService;
     private final KakaoService kakaoService;
@@ -45,12 +44,12 @@ public class SignService {
         );
     }
 
+    @Transactional(noRollbackFor = LoginFailureException.class)
     public UserLoginResponseDto login(UserLoginRequestDto requestDto){
         User user = userRepository.findByUid(requestDto.getUid()).orElseThrow(LoginFailureException::new);
         if(user.getFailureCount() >= 5) throw new LockedAccountException();
         if(!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
             user.increaseFailureCount();
-            entityManager.createNativeQuery("commit").executeUpdate();
             throw new LoginFailureException();
         }
         user.changeRefreshToken(createRefreshToken(user.getId()));

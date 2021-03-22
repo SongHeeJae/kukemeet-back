@@ -14,7 +14,4 @@ import javax.validation.constraints.NotEmpty;
 public class RoomCreateRequestDto {
     @NotBlank
     private String title;
-
-    @NotBlank
-    private String pin;
 }

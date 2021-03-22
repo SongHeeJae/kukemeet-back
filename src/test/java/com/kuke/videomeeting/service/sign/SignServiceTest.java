@@ -18,7 +18,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.util.Collections;
 import java.util.Optional;
@@ -35,7 +34,6 @@ class SignServiceTest {
     @Mock private PasswordEncoder passwordEncoder;
     @Mock private UserRepository userRepository;
     @Mock private JwtTokenProvider jwtTokenProvider;
-    @Mock private EntityManager entityManager;
     @Mock private CacheService cacheService;
     @Mock private KakaoService kakaoService;
 
@@ -117,7 +115,7 @@ class SignServiceTest {
         // when, then
         assertThatThrownBy(() -> {
             signService.login(requestDto);
-        }).isInstanceOf(NullPointerException.class);
+        }).isInstanceOf(LoginFailureException.class);
     }
 
     @Test

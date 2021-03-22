@@ -4,51 +4,72 @@ import com.kuke.videomeeting.model.dto.room.RoomDto;
 import com.kuke.videomeeting.service.file.FileService;
 import com.kuke.videomeeting.service.room.RoomService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 public class DestroyEmptyRoomScheduler {
     private final RoomService roomService;
-    private final FileService fileService;
-    private final Set<String> prevEmptyRooms = new HashSet<>(); // 이전 검사에서 비어있다고 나온 방들
+    private final Map<String, Set<String>> prevEmptyRooms = new HashMap<>(); // 이전 검사에서 비어있다고 나온 방들
 
-    @Scheduled(fixedDelay = 1000L * 60)
+    @Scheduled(fixedDelay = 1000L * 300)
     public void destroyEmptyRoom() {
         try {
-            Set<String> emptyRooms = getEmptyRooms();
-            List<String> destroyRooms = getDestroyRooms(emptyRooms);
+            Map<String, Set<String>> emptyRooms = getEmptyRooms();
+            Map<String, List<String>> destroyRooms = getDestroyRooms(emptyRooms);
             destroyRooms(emptyRooms, destroyRooms);
             prevEmptyRooms.clear();
-            prevEmptyRooms.addAll(emptyRooms);
+            for (String s : emptyRooms.keySet()) {
+                prevEmptyRooms.put(s, emptyRooms.get(s));
+            }
         } catch (Exception e) {
             // empty
         }
     }
 
-    private Set<String> getEmptyRooms() throws Exception {
-        return roomService.readAllRooms().stream()
-                .filter(i -> i.getNum_participants() == 0)
-                .map(i -> i.getRoom()).collect(Collectors.toSet());
+    private Map<String, Set<String>> getEmptyRooms() throws Exception {
+        Map<String, List<RoomDto>> allRooms = roomService.readAllRooms();
+        Map<String, Set<String>> result = new HashMap<>();
+        for (String s : allRooms.keySet()) {
+            List<RoomDto> rooms = allRooms.get(s);
+            result.put(s, rooms.stream()
+                    .filter(i -> i.getNum_participants() == 0)
+                    .map(i -> i.getRoom())
+                    .collect(Collectors.toSet()));
+        }
+        return result;
     }
 
-    private List<String> getDestroyRooms(Set<String> emptyRooms) { // 이전 검사도 비어있어서 파괴해야할 방 목록
-        return emptyRooms.stream()
-                .filter(i -> prevEmptyRooms.contains(i)).collect(Collectors.toList());
+    private Map<String, List<String>> getDestroyRooms(Map<String, Set<String>> emptyRooms) { // 이전 검사도 비어있어서 파괴해야할 방 목록
+        Map<String, List<String>> result = new HashMap<>();
+        for (String s : emptyRooms.keySet()) {
+            Set<String> emptyRoom = emptyRooms.get(s);
+            if(!prevEmptyRooms.containsKey(s)) continue;
+            Set<String> prevEmptyRoom = prevEmptyRooms.get(s);
+            result.put(s, emptyRoom.stream()
+                    .filter(i -> prevEmptyRoom.contains(i)).collect(Collectors.toList()));
+        }
+        return result;
     }
 
-    private void destroyRooms(Set<String> emptyRooms, List<String> destroyRooms) throws Exception{
-        destroyRooms.stream().forEach(i -> {
-            roomService.destroyRoom(i);
-            fileService.deleteFilesInDirectory(i);
-            emptyRooms.remove(i); // 이미 제거한 빈방
-        });
+    private void destroyRooms(Map<String, Set<String>> emptyRooms, Map<String, List<String>> destroyRooms) {
+        for (String s : destroyRooms.keySet()) {
+            List<String> destroyRoom = destroyRooms.get(s);
+            Set<String> emptyRoom = emptyRooms.get(s);
+            destroyRoom.stream().forEach(i -> {
+                try {
+                    roomService.destroyRoom(i, s);
+                    emptyRoom.remove(i); // 이미 제거한 빈방
+                } catch (Exception e) {
+                    // continue;
+                }
+            });
+        }
     }
 
 }
