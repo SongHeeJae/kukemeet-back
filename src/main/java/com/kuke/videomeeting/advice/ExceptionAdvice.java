@@ -170,4 +170,10 @@ public class ExceptionAdvice {
         return responseService.getFailResult(-1023, "생성된 방을 찾을 수 없습니다.");
     }
 
+    @ExceptionHandler(MediaServerCommunicationFailureException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result mediaServerCommunicationFailureException() {
+        return responseService.getFailResult(-1024, "미디어 서버와의 통신에 실패하였습니다.");
+    }
+
 }

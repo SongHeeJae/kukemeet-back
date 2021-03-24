@@ -41,23 +41,23 @@ public class RoomService {
 
     @Transactional
     public RoomSimpleDto createRoom(Long userId, RoomCreateRequestDto requestDto) {
-
+        // 방 생성이 정상적으로 처리되었을 때 DB에 저장
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        String pin = generateRoomPin();
-        String server = getServer();
-
+        String pin = generateRoomPin(), server = getServer();
         try {
             HttpEntity<String> request = generateRequest(generateJsonForCreatingRoom(requestDto, pin));
             ResponseEntity<String> response = sendPostRequest(request, server);
-            RoomCreateResultDto result = gson.fromJson(response.getBody(), RoomCreateResultDto.class);
-            Room room = roomRepository.save(
-                    Room.createRoom(result.getResponse().getRoom(), requestDto.getTitle(), pin, server, user)
-            );
-            return RoomSimpleDto.convertRoomToDto(room);
+            if(response.getStatusCode() == HttpStatus.OK) {
+                RoomCreateResultDto result = gson.fromJson(response.getBody(), RoomCreateResultDto.class);
+                Room room = roomRepository.save(
+                        Room.createRoom(result.getResponse().getRoom(), requestDto.getTitle(), pin, server, user)
+                );
+                return RoomSimpleDto.convertRoomToDto(room);
+            }
         } catch (Exception e) {
             throw new CreateRoomFailureException();
         }
-
+        throw new MediaServerCommunicationFailureException();
     }
 
     @Transactional(readOnly = true)
@@ -96,19 +96,18 @@ public class RoomService {
         }
     }
 
-    @Transactional(noRollbackFor = DestroyRoomFailureException.class)
+    @Transactional
     public void destroyRoom(String number, String server) {
-        // 미디어 서버와 DB 둘다 삭제 보장
-        // 미디어 서버에서 조회한 것이므로 미디어 서버 우선 삭제, 삭제 안되면 나중에 다시 요청 가능
-        // 예외나서 실패하더라도, 일단 DB와 파일 데이터는 삭제
+        // 생성 시점에 미디어 서버와 DB는 둘다 생성이 보장되어 있음
+        // 이미 제거 요청된 방이고, 미디어 서버에서 어차피 또 가져와서 삭제 요청할 것이므로
+        // 예외 발생하더라도 롤백 안해도됨. DB에 있든 없든, 0명으로 나왔으니 삭제시켜야함
         try {
+            roomRepository.findByNumber(number).ifPresent(r -> roomRepository.delete(r));
+            fileService.deleteFilesInDirectory(number);
             HttpEntity<String> request = generateRequest(generateJsonForDestructionRoom(number));
             sendPostRequest(request, server);
         } catch(Exception e) {
             throw new DestroyRoomFailureException();
-        } finally {
-            roomRepository.findByNumber(number).ifPresent(r -> roomRepository.delete(r));
-            fileService.deleteFilesInDirectory(number);
         }
     }
 
